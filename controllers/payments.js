@@ -14,14 +14,17 @@ module.exports = {
     }
   },
   newPayment: async (req, res) => {
+    console.log(req.body)
     try {
-      const customers = await Customer.find().lean();
-      res.render("payment/new-payment.ejs", { customers: customers, user: req.user });
+      const customer = await Customer.findById(req.params.id).lean();
+      const invoices = await Invoice.find({ customer: customer.id, isPaid: false })
+      res.render("payment/new-payment.ejs", { customer: customer, invoices: invoices, user: req.user });
     } catch (err) {
       console.log(err);
     }
   },
   createPayment: async (req, res) => {
+
     try {
       const payment = await Payment.create({
         number: req.body.number,
@@ -29,11 +32,10 @@ module.exports = {
         customer: req.body.customer,
         amount: req.body.amount,
         tender: req.body.tender,
-        invoices: req.body.invoices,
       });
       console.log("Payment has been added!");
 
-      const customer = await Customer.findById(payment.customer)
+
       const newBalance = customer.balance - req.body.total
 
       await Customer.findOneAndUpdate(
@@ -44,28 +46,49 @@ module.exports = {
       )
       console.log("Customer balance successfully updated!")
 
-      //what if there is already a credit??
-
-
-      //iterate through the invoices
-      //while payment.total > 0...
-      // if payment.total > invoice.due
-      // invoice.due set to 0 and payment.total - invoice.due
-      // if invoice is overdue, set that amount to 0 too
-      // after all the invoices are iterated, what to do with the leftover payment? -- is it enough that it has already been applied to the overall balance?
+      let paymentApplication = payment.amount
 
       await payment.invoices.forEach(invoice => {
-        
-        Invoice.findOneAndUpdate(
-          { _id: invoice.id },
-          {
-            $set: { 
-              isPaid: true, 
-              paidBy: payment._id,
 
+        if (paymentApplication > 0){
+          if (paymentApplication > invoice.due) {
+            paymentApplication -= invoice.due
+
+            Invoice.findOneAndUpdate(
+              { _id: invoice.id },
+              {
+                $set: { 
+                  due: 0.00,
+                  overDue: 0.00,
+                  isPaid: true, 
+                  paidBy: payment._id,
+                  
+                }
+              }
+            )
+          } else {
+            let remaining = invoice.due - paymentApplication
+            let updateOverDue = 0.00
+
+            if (invoice.overDue > 0) {
+              updateOverDue = invoice.overdue - paymentApplication
             }
+
+            paymentApplication = 0
+
+            Invoice.findOneAndUpdate(
+              { _id: invoice.id },
+              {
+                $set: { 
+                  due: remaining,
+                  overDue: updateOverDue,
+                }
+              }
+            )
           }
-        )
+        }
+        
+
       });
       console.log('All invoices updated!')
       
@@ -79,16 +102,18 @@ module.exports = {
       // Find payment by id
       let payment = await Payment.findById(req.params.id);
       const customer = await Customer.findById(payment.customer)
+      const invoices = await Invoice.find({ paidBy: req.params.id})
       const newBalance = customer.balance + payment.total
-
-      // also need to go the the invoices and mark them unpaid and remove the paidby data
-      const invoices = req.params.invoices
 
       await invoices.forEach(invoice => {
         Invoice.findOneAndUpdate(
           { _id: invoice.id },
           {
-            $set: { isPaid: false, paidBy: null }
+            $set: { 
+              isPaid: false, 
+              paidBy: null,
+              due: invoice.amount,
+            }
           }
         )
       });

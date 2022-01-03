@@ -4,23 +4,49 @@
     <div class="col-6">
       <div class="mt-5">
         <h2>Make a Payment</h2>
-        <form action="/payments/createPayment" enctype="multipart/form-data" method="POST">
+        <form action="/payments/createPayment" method="POST">
           <div class="mb-3">
-            <!-- select from customer list -->
-              <label for="customer" class="form-label">Customer</label>
-              <select name="customer" id="customer">
-                  <% customers.forEach(customer => { %>
-                    <option value="<%= customer.id %>"><%= customer.companyName %></option>
-                  <% }) %>
-              </select>
+            <!-- passes in the selected customer -->
+              <label for="customer" class="form-label"><%= customer.companyName %></label>
+              <input type="hidden" class="form-control" id="customer" name="customer" value="<%= customer.id %>">
           </div>
+    <!-- Invoices!!!  -->
+    <div class="row justify-content-center mt-5">
+      <h4>Open Invoices</h4>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Invoice Number</th>
+          <th>Amount</th>
+          <th>Select</th>
+        </tr>
+        <% invoices.forEach( invoice => { %>
+          <tr>
+            <td>
+              <%= invoice.date.toLocaleDateString() %>
+            </td>
+            <td>
+              <a href="/invoices/viewInvoice/<%= invoice.id %>">
+                <%= invoice.number %>
+              </a>
+            </td>
+            <td>          
+              $ <%= invoice.total.toFixed(2) %>
+            </td>
+            <td>
+              <input type="checkbox" id="<%= invoice.number %>" name="invoices" value="<%= invoice.id %>">
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+      </div>
           <div class="mb-3">
             <label for="date" class="form-label">Date</label>
             <input type="date" class="form-control" id="date" name="date">
           </div>
           <div class="mb-3">
             <label for="amount" class="form-label">Amount</label>
-            <input type="amount" class="form-control" id="amount" name="amount">
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount">
           </div>
           <div class="mb-3">
             <label for="number" class="form-label">Reference Number</label>
@@ -29,13 +55,14 @@
           <div class="mb-3">
             <!-- select from a list of possible tender types -->
               <label for="tender" class="form-label">Tender</label>
-              <select name="tender" id="tender">
+              <select name="tender" class="form-control" id="tender">
+                <option value="" disabled selected>--Choose tender--</option>
                   <% ["Cash", "Credit Card", "Check", "Returned Merchandise", "Money Order", "Gift Card"].forEach(type => { %>
                     <option value="<%= type %>"><%= type %></option>
                   <% }) %>
               </select>
           </div>
-          <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
   </div>

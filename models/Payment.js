@@ -12,6 +12,7 @@ const PaymentSchema = new mongoose.Schema({
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
+    required: true,
   },
   amount: {
     type: Number,
@@ -19,7 +20,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   tender: {
     type: String,
-    require: true,
+    required: true,
   },
 });
 
