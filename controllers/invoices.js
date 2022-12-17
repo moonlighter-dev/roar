@@ -22,7 +22,8 @@ module.exports = {
   },
   newInvoice: async (req, res) => {
     try {
-      res.render("new-invoice.ejs");
+      const customers = await Customer.find().lean();
+      res.render("new-invoice.ejs", { customers: customers });
     } catch (err) {
       console.log(err);
     }

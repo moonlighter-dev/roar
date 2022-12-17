@@ -6,7 +6,7 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Invoice Routes
 
-//Get all Invoices
+//Get all Invoices - not used at this time
 router.get("/Invoices", ensureAuth, invoicesController.getInvoices)
 
 //Get One Invoice
@@ -15,10 +15,10 @@ router.get("/:id", invoicesController.getInvoice);
 //Go to New Invoice Form
 router.get("/newInvoice", invoicesController.newInvoice);
 
-//Create a new Customer (with form input)
+//Create a new Invoice (using form input)
 router.post("/createInvoice", upload.single("file"), invoicesController.createInvoice);
 
-//Deeelaytay a Invoice
+//Deeelaytay an Invoice
 router.delete("/deleteInvoice/:id", invoicesController.deleteInvoice);
 
 module.exports = router;

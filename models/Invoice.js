@@ -26,6 +26,14 @@ const InvoiceSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  isPaid: {
+    type: Boolean,
+    default: false,
+  },
+  paidBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Payment",
+  }
 });
 
 module.exports = mongoose.model("Invoice", InvoiceSchema);
