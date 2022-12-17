@@ -1,0 +1,54 @@
+<%- include('./partials/header') -%>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-6">
+      <h2><%= customer.companyName %></h2>
+      <h3><%= customer.fullName %></h3>
+      <ul>
+        <li>
+          <%= customer.phone %>
+        </li>
+        <li>
+          <%= customer.email %>
+        </li>
+      </ul>
+      <div class="row justify-content-between">
+        <h3 class="col-3">Address: <%= customer.address %></h3>
+        <span><%= customer.city %></span>
+        <span><%= customer.state %></span>
+        <span><%= customer.zip %></span>
+        <!-- Edit button -->
+        <a href="/customers/editCustomer/<%= customer.id %>" class="btn">Edit</a>
+      </div>
+    </div>
+    <div class="col-3 mt-5">
+      <p><%= customer.limit %></p>
+      <p><%= customer.terms %></p>
+      <p><%= customer.taxId %></p>
+      <p><%= customer.balance %></p>
+      <p><%= customer.addedOn.toString() %></p>
+    </div>
+
+    <!-- Invoices!!!  -->
+    <h4>Invoices</h4>
+    <a href="/invoices/newInvoice/" data="<%= customer._id %>" class="btn">
+      New Invoice
+    </a>
+    <ul>
+    <% invoices.forEach( el => { %>
+      <% if (!isPaid) { %>
+            <li class='invoice' data-id='<%=el._id%>'>
+                <span><%= el.date %></span>
+                <span><%= el.total %></span>
+            </li>
+      <% } %>
+    <% }) %>    
+    </ul>
+
+    <div class="col-6 mt-5">
+      <a class="btn btn-primary" href="/customers">Return to Customers</a>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') -%>

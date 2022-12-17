@@ -18,7 +18,7 @@ router.get("/newCustomer", customersController.newCustomer);
 router.post("/createCustomer", customersController.createCustomer);
 
 //Go to Edit Customer Form
-router.get("/editCustomer/:id", customerController.editCustomer);
+router.get("/editCustomer/:id", customersController.editCustomer);
 
 //Update a Customer
 router.put("/updateCustomer/:id", customersController.updateCustomer);

@@ -1,10 +1,11 @@
 const Customer = require("../models/Customer");
+const Invoice = require("../models/Invoice");
 
 module.exports = {
   getCustomers: async (req, res) => {
     try {
       const customers = await Customer.find().sort({ createdAt: "desc" }).lean();
-      res.render("customers.ejs", { customers: customers });
+      res.render("customer/customers.ejs", { customers: customers });
     } catch (err) {
       console.log(err);
     }
@@ -12,13 +13,14 @@ module.exports = {
   getCustomer: async (req, res) => {
     try {
       const customer = await Customer.findById(req.params.id);
-      res.render("customer.ejs", { customer: customer });
+      const invoices = await Invoice.find({ customer: customer.id })
+      res.render("customer/customer.ejs", { customer: customer, invoices: invoices });
     } catch (err) {
       console.log(err);
     }
   },
   newCustomer: async (req, res) => {
-    res.render("/new-customer.ejs")
+    res.render("customer/new-customer.ejs")
   },
   createCustomer: async (req, res) => {
     try {
@@ -46,7 +48,7 @@ module.exports = {
   editCustomer: async (req, res) => {
     try {
       const customer = await Customer.findById(req.params.id);
-      res.render("edit-customer.ejs", { customer: customer });
+      res.render("customer/edit-customer.ejs", { customer: customer });
     } catch (err) {
       console.log(err);
     }
