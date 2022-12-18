@@ -1,0 +1,25 @@
+<%- include('./partials/header') -%>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-6">
+      <h2><%= payment.number %></h2>
+      <h3><%= payment.customer %></h3>
+      <div class="row justify-content-between">
+        <h3 class="col-3"><%= payment.amount %></h3>
+        <span><%= payment.date.toString() %></span>
+        <span><%= payment.tender %></span>
+        
+        <!-- Deelaytay button -->
+        <form
+        action="/payment/deletePayment/<%= payment.id %>?_method=DELETE"
+        method="POST"
+        class="col-3"
+      >
+        <button class="btn btn-danger fa fa-trash" type="submit">Delete this Payment</button>
+      </form>
+      </div>
+    </div>
+   </div>
+</div>
+
+<%- include('./partials/footer') -%>

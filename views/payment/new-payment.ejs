@@ -1,0 +1,48 @@
+<%- include('./partials/header') -%>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-6">
+      <div class="mt-5">
+        <h2>Make a Payment</h2>
+        <form action="/payments/createPayment" enctype="multipart/form-data" method="POST">
+          <div class="mb-3">
+            <!-- select from customer list -->
+              <label for="customer" class="form-label">Customer</label>
+              <select name="customer" id="customer">
+                  <% customers.forEach(customer => { %>
+                    <option value="<%= customer.id %>"><%= customer.companyName %></option>
+                  <% }) %>
+              </select>
+          </div>
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date">
+          </div>
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="amount" class="form-control" id="amount" name="amount">
+          </div>
+          <div class="mb-3">
+            <label for="number" class="form-label">Reference Number</label>
+            <input type="number" class="form-control" id="number" name="number">
+          </div>
+          <div class="mb-3">
+            <!-- select from a list of possible tender types -->
+              <label for="tender" class="form-label">Tender</label>
+              <select name="tender" id="tender">
+                  <% ["Cash", "Credit Card", "Check", "Returned Merchandise", "Money Order", "Gift Card"].forEach(type => { %>
+                    <option value="<%= type %>"><%= type %></option>
+                  <% }) %>
+              </select>
+          </div>
+          <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
+        </form>
+      </div>
+
+    <div class="col-6 mt-5">
+      <a class="btn btn-primary" href="/customers">Return to Customers</a>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') -%>
