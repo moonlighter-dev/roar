@@ -40,6 +40,7 @@
             <li class='invoice' data-id='<%=el._id%>'>
                 <span><%= el.date %></span>
                 <span><%= el.total %></span>
+                <a class="btn btn-primary" href="/invoices/<%= el.id %>">View</a>
             </li>
       <% } %>
     <% }) %>    
