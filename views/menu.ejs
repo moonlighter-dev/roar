@@ -4,13 +4,17 @@
       <div class="col-6">
           <div>
               <p><strong>Welcome,</strong> <%= user.userName %>!</p>
-              <a href="/logout" class="col-3 btn btn-primary">Logout</a>
+
           </div>
           <div class="mt-5">
             <!-- Add an invoice -->
             <a class="btn btn-primary" href="/invoices/newInvoice">New Invoice</a>
+          </div>
+          <div class="mt-5">
             <!-- Make a payment -->
             <a class="btn btn-primary" href="/payments/newPayment">Make Payment</a>
+          </div>
+          <div class="mt-5">
             <!-- View Customers -->
             <a class="btn btn-primary" href="/customers">View Customers</a>
           </div>

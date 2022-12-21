@@ -19,7 +19,7 @@ module.exports = {
       console.log(err);
     }
   },
-  newCustomer: async (req, res) => {
+  newCustomer: (req, res) => {
     res.render("customer/new-customer.ejs")
   },
   createCustomer: async (req, res) => {

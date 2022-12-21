@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const InvoiceSchema = new mongoose.Schema({
 
   number: {
-    type: number,
+    type: Number,
     required: true,
   },
   date: {
@@ -15,7 +15,7 @@ const InvoiceSchema = new mongoose.Schema({
     ref: "Customer",
   },
   total: {
-    type: number,
+    type: Number,
     required: true,
   },
   image: {

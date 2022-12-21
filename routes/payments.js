@@ -8,7 +8,7 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 
 //Get One Payment
-router.get("/:id", paymentsController.getPayment);
+router.get("/viewPayment/:id", paymentsController.getPayment);
 
 //Go to New Payment Form
 router.get("/newPayment", paymentsController.newPayment);

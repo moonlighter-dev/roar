@@ -7,10 +7,10 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 //Invoice Routes
 
 //Get all Invoices - not used at this time
-router.get("/invoices", ensureAuth, invoicesController.getInvoices)
+router.get("/", ensureAuth, invoicesController.getInvoices)
 
 //Get One Invoice
-router.get("/:id", invoicesController.getInvoice);
+router.get("/viewInvoice/:id", invoicesController.getInvoice);
 
 //Go to New Invoice Form
 router.get("/newInvoice", invoicesController.newInvoice);

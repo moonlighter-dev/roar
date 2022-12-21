@@ -3,7 +3,7 @@ module.exports = {
     res.render("index.ejs");
   },
 
-  getMenu: async (req, res) => {
-    res.render("menu.ejs");
+  getMenu: (req, res) => {
+    res.render("menu.ejs", { user: req.user });
   },
 };

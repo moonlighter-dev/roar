@@ -6,10 +6,10 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 //Customer Routes
 
 //Get all Customers
-router.get("/customers", ensureAuth, customersController.getCustomers)
+router.get("/", ensureAuth, customersController.getCustomers)
 
 //Get One Customer
-router.get("/:id", customersController.getCustomer);
+router.get("/viewCustomer/:id", customersController.getCustomer);
 
 //Go to New Customer Form
 router.get("/newCustomer", customersController.newCustomer);

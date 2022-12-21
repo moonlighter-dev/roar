@@ -8,7 +8,7 @@ module.exports = {
       const payment = await Payment.findById(req.params.id);
       const customer = await Customer.findbyId(payment.customer)
       const invoices = await Invoice.find({ paidBy: payment.id })
-      res.render("/payment/payment.ejs", { payment: payment, customer: customer, invoices: invoices });
+      res.render("payment/payment.ejs", { payment: payment, customer: customer, invoices: invoices });
     } catch (err) {
       console.log(err);
     }
@@ -16,7 +16,7 @@ module.exports = {
   newPayment: async (req, res) => {
     try {
       const customers = await Customer.find().lean();
-      res.render("/payment/new-payment.ejs", { customers: customers });
+      res.render("payment/new-payment.ejs", { customers: customers });
     } catch (err) {
       console.log(err);
     }

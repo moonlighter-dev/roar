@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 
 const PaymentSchema = new mongoose.Schema({
-
   number: {
-    type: number,
+    type: Number,
     required: true,
   },
   date: {
@@ -15,7 +14,7 @@ const PaymentSchema = new mongoose.Schema({
     ref: "Customer",
   },
   amount: {
-    type: number,
+    type: Number,
     required: true,
   },
   tender: {
