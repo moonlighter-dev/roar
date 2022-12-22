@@ -7,15 +7,13 @@ const CustomerSchema = new mongoose.Schema({
   },
   fullName: {
     type: String,
-    require: true,
+    required: true,
   },
   phone: {
-    type: String,
-    require: true,
+    type: String
   },
   email: {
-    type: String,
-    required: true,
+    type: String
   },
   address: {
     type: String,
@@ -30,11 +28,11 @@ const CustomerSchema = new mongoose.Schema({
     required: true,
   },
   zip: {
-    type: Number,
+    type: String,
     required: true,
   },
   limit: {
-    type: Number,
+    type: String,
     required: true,
   },
   terms: {
@@ -46,8 +44,12 @@ const CustomerSchema = new mongoose.Schema({
     default: null,
   },
   balance: {
-    type: Number,
+    type: String,
     required: true,
+  },
+  vendor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   addedOn: {
     type: Date,

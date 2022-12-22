@@ -4,7 +4,7 @@ const Invoice = require("../models/Invoice");
 module.exports = {
   getCustomers: async (req, res) => {
     try {
-      const customers = await Customer.find().sort({ createdAt: "desc" }).lean();
+      const customers = await Customer.find({ vendor: req.user.id }).sort({ companyName: 1 }).lean();
       res.render("customer/customers.ejs", { customers: customers });
     } catch (err) {
       console.log(err);
@@ -23,6 +23,7 @@ module.exports = {
     res.render("customer/new-customer.ejs")
   },
   createCustomer: async (req, res) => {
+    console.log(req.body)
     try {
       await Customer.create({
         companyName: req.body.companyName,
@@ -36,7 +37,8 @@ module.exports = {
         limit: req.body.limit,
         terms: req.body.terms,
         taxId: req.body.taxId,
-        balance: 0,
+        balance: "0.00",
+        vendor: req.user.id,
         addedOn: Date.now(),
       });
       console.log("Customer has been added!");
