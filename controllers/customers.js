@@ -56,6 +56,7 @@ module.exports = {
     }
   },
   updateCustomer: async (req, res) => {
+    console.log(req.body)
     try {
       await Customer.findOneAndUpdate(
         { _id: req.params.id },
@@ -72,7 +73,7 @@ module.exports = {
         }
       );
       console.log("Customer updated!");
-      res.redirect(`/customer/${req.params.id}`);
+      res.redirect(`/customers/viewCustomer/${req.params.id}`);
     } catch (err) {
       console.log(err);
     }

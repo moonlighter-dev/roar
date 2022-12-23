@@ -1,39 +1,55 @@
 <%- include('../partials/header') -%>
 <div class="container">
   <div class="row justify-content-center mt-5">
-    <div class="col-6">
       <h2><%= customer.companyName %></h2>
       <h3><%= customer.fullName %></h3>
-      <ul>
-        <li>
-          <%= customer.phone %>
-        </li>
-        <li>
-          <%= customer.email %>
-        </li>
-      </ul>
+      <a href="/customers/editCustomer/<%= customer.id %>" class="btn btn-primary">Edit</a>
+    <div class="col-6">
+      <h4>Phone</h4>
+      <% if (customer.phone) { %>
+      <span><%= customer.phone %></span>
+      <% } else { %>
+      <span>not entered</span>
+      <% } %>
+      <br>
+      <h4>email</h4>
+      <% if (customer.phone) { %>
+      <span><%= customer.email %></span>
+      <% } else { %>
+        <span>not entered</span>
+      <% } %>
       <div class="row justify-content-between">
-        <h3 class="col-3">Address: <%= customer.address %></h3>
+        <h4 class="col-6">Address: </h4>
+        <span><%= customer.address %></span>
         <span><%= customer.city %></span>
         <span><%= customer.state %></span>
         <span><%= customer.zip %></span>
-        <!-- Edit button -->
-        <a href="/customers/editCustomer/<%= customer.id %>" class="btn">Edit</a>
       </div>
     </div>
-    <div class="col-3 mt-5">
+    <div class="col-6 mt-5">
+      <h5>Charge Limit</h5>
       <p><%= customer.limit %></p>
+      <h5>Terms</h5>
       <p><%= customer.terms %></p>
-      <p><%= customer.taxId %></p>
+      <h5>Tax Exempt Id</h5>
+      <% if (customer.taxId) { %>
+        <p><%= customer.taxId %></p>
+        <% } else { %>
+        <p>not exempt</p>
+        <% } %>
+      <h5>Current Balance</h5>
       <p><%= customer.balance %></p>
+      <h5>Date Added</h5>
       <p><%= customer.addedOn.toString() %></p>
     </div>
 
     <!-- Invoices!!!  -->
-    <h4>Invoices</h4>
-    <a href="/invoices/newInvoice/" data="<%= customer._id %>" class="btn">
+
+    <a href="/invoices/newInvoice/" data="<%= customer._id %>" class="btn btn-primary">
       New Invoice
     </a>
+
+    <h4>Invoices</h4>
     <ul>
     <% invoices.forEach( el => { %>
       <% if (!isPaid) { %>

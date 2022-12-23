@@ -4,55 +4,55 @@
     <div class="col-6">
       <div class="mt-5">
         <h2>Edit <%= customer.companyName %></h2>
-        <form action="/customers/createCustomer" enctype="multipart/form-data" action="/customers/editCustomer/<%= customer.id %>?_method=PUT"
+        <form action="/customers/updateCustomer/<%= customer.id %>?_method=PUT"
         method="POST">
           <div class="mb-3">
               <label for="companyName" class="form-label">Company Name</label>
-              <input type="text" class="form-control" id="companyName" name="companyName" placeholder="<%= customer.companyName %>">
+              <input type="text" class="form-control" id="companyName" name="companyName" value="<%= customer.companyName %>">
           </div>
           <div class="mb-3">
             <label for="fullName" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="fullName" name="fullName" placeholder="<%= customer.fullName %>">
+            <input type="text" class="form-control" id="fullName" name="fullName" value="<%= customer.fullName %>">
           </div>
           <div class="mb-3">
             <label for="phone" class="form-label">Phone</label>
-            <input type="phone" class="form-control" id="phone" name="phone" placeholder="<%= customer.phone %>">
+            <input type="text" class="form-control" id="phone" name="phone" value="<%= customer.phone %>">
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="<%= customer.email %>">
+            <input type="text" class="form-control" id="email" name="email" value="<%= customer.email %>">
           </div>
           <div class="mb-3">
             <label for="address" class="form-label">Mailing Address</label>
-            <input type="text" class="form-control" id="address" name="address" placeholder="<%= customer.address %>">
+            <input type="text" class="form-control" id="address" name="address" value="<%= customer.address %>">
           </div>
           <div class="mb-3">
             <label for="city" class="form-label">City</label>
-            <input type="text" class="form-control" id="city" name="city" placeholder="<%= customer.city %>">
+            <input type="text" class="form-control" id="city" name="city" value="<%= customer.city %>">
           </div>
           <div class="mb-3">
             <!-- should be a select option for TX or LA, or all states if desired -->
             <label for="state" class="form-label">State</label>
-            <input type="text" class="form-control" id="state" name="state" placeholder="<%= customer.state %>">
+            <input type="text" class="form-control" id="state" name="state" value="<%= customer.state %>">
           </div>
           <div class="mb-3">
             <label for="zip" class="form-label">Zip Code</label>
-            <input type="zip" class="form-control" id="zip" name="zip" placeholder="<%= customer.zip %>">
+            <input type="text" class="form-control" id="zip" name="zip" value="<%= customer.zip %>">
           </div>
           <div class="mb-3">
             <label for="limit" class="form-label">Credit Limit</label>
-            <input type="number" class="form-control" id="limit" name="limit" placeholder="<%= customer.limit %>">
+            <input type="text" class="form-control" id="limit" name="limit" value="<%= customer.limit %>">
           </div>
           <div class="mb-3">
             <label for="taxId" class="form-label">Tax Id if Exempt</label>
-            <input type="text" class="form-control" id="taxId" name="taxId" placeholder="<%= customer.taxId %>">
+            <input type="text" class="form-control" id="taxId" name="taxId" value="<%= customer.taxId %>">
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
 
     <div class="col-6 mt-5">
-      <form action="/customer/deleteCustomer/<%= customer.id %>?_method=DELETE" method="POST" class="col-3">
+      <form action="/customers/deleteCustomer/<%= customer.id %>?_method=DELETE" method="POST" class="col-3">
       <button class="btn btn-danger fa fa-trash" type="submit">Delete this Customer</button>
       </form>
       <a class="btn btn-primary" href="/customers">Return to Customers</a>
