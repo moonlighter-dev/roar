@@ -12,22 +12,13 @@ const CustomerSchema = new mongoose.Schema({
   phone: {
     type: String
   },
+  altPhone: {
+    type: String
+  },
   email: {
     type: String
   },
-  address: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-  zip: {
+  billTo: {
     type: String,
     required: true,
   },
