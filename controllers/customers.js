@@ -5,7 +5,7 @@ module.exports = {
   getCustomers: async (req, res) => {
     try {
       const customers = await Customer.find({ vendor: req.user.id }).sort({ companyName: 1 }).lean();
-      res.render("customer/customers.ejs", { customers: customers });
+      res.render("customer/customers.ejs", { customers: customers, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -14,7 +14,7 @@ module.exports = {
     try {
       const customer = await Customer.findById(req.params.id);
       const invoices = await Invoice.find({ customer: customer.id })
-      res.render("customer/customer.ejs", { customer: customer, invoices: invoices });
+      res.render("customer/customer.ejs", { customer: customer, invoices: invoices, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -48,7 +48,7 @@ module.exports = {
   editCustomer: async (req, res) => {
     try {
       const customer = await Customer.findById(req.params.id);
-      res.render("customer/edit-customer.ejs", { customer: customer });
+      res.render("customer/edit-customer.ejs", { customer: customer, user: req.user });
     } catch (err) {
       console.log(err);
     }

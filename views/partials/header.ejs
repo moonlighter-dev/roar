@@ -31,7 +31,8 @@
         <h1 class=""><a href="/customers">ROAR</a></h1>
         <span>Received on Accounts... Receivable!</span>
       </div>
-      <!-- 
-        <a href="/logout" class="col-3 btn btn-primary">Logout</a> -->
+      <% if (user) { %>
+        <a href="/logout" class="col-3 btn btn-primary">Logout</a>
+      <% } %>
     </header>
 
