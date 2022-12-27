@@ -6,7 +6,8 @@ module.exports = {
   getInvoice: async (req, res) => {
     try {
       const invoice = await Invoice.findById(req.params.id);
-      res.render("invoice.ejs", { invoice: invoice });
+      const customer = await Customer.findById(invoice.customer)
+      res.render("invoice/invoice.ejs", { invoice: invoice, customer: customer, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -15,7 +16,7 @@ module.exports = {
     try {
       const customer = await Customer.find({ id: req.params.id })
       const invoices = await Invoice.find({ customer: customer }).sort({ date: 1 }).lean();
-      res.render("invoices.ejs", { invoices: invoices });
+      res.render("invoices.ejs", { invoices: invoices, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -23,17 +24,18 @@ module.exports = {
   newInvoice: async (req, res) => {
     try {
       const customers = await Customer.find().lean();
-      res.render("invoice/new-invoice.ejs", { customers: customers });
+      res.render("invoice/new-invoice.ejs", { customers: customers, user: req.user });
     } catch (err) {
       console.log(err);
     }
   },
   createInvoice: async (req, res) => {
+    console.log(req.body)
     try {
       // Upload image to cloudinary
       const result = await cloudinary.uploader.upload(req.file.path);
-      const customer = await Customer.findById(req.params.customer)
-      const newBalance = customer.balance + req.body.total
+      const customer = await Customer.findById(req.body.customer)
+      const newBalance = (+customer.balance + req.body.total)
 
       const invoice = await Invoice.create({
         // need this number to increment for every invoice created
@@ -49,11 +51,11 @@ module.exports = {
       await Customer.findOneAndUpdate(
         { _id: invoice.customer },
         {
-          $set: { balance: newBalance }
+          $set: { balance: newBalance.toString() }
         }
       )
       console.log("Customer balance successfully updated!")
-      res.redirect(`/customer/${invoice.customer}`);
+      res.redirect(`/customers/viewCustomer/${invoice.customer}`);
     } catch (err) {
       console.log(err);
     }
@@ -77,7 +79,7 @@ module.exports = {
         }
       )
       console.log("Customer balance successfully updated!")
-      res.redirect(`/customer/${invoice.customer}`);
+      res.redirect(`/customers/viewCustomer/${invoice.customer}`);
     } catch (err) {
       res.redirect(`/customers`);
     }

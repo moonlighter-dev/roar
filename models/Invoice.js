@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const InvoiceSchema = new mongoose.Schema({
 
   number: {
-    type: Number,
+    type: String,
     required: true,
   },
   date: {
@@ -13,6 +13,7 @@ const InvoiceSchema = new mongoose.Schema({
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
+    required: true,
   },
   total: {
     type: Number,

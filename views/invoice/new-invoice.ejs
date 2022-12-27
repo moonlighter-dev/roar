@@ -9,9 +9,10 @@
             <!-- select from customer list -->
               <label for="customer" class="form-label">Customer</label>
               <select name="customer" id="customer">
-                  <% customers.forEach(customer => { %>
-                    <option value="<%= customer.id %>"><%= customer.companyName %></option>
-                  <% }) %>
+                <option value="" disabled selected>--Choose customer--</option>
+                <% customers.forEach(customer => { %>
+                  <option value="<%= customer._id %>"><%= customer.companyName %></option>
+                <% }) %>
               </select>
           </div>
           <div class="mb-3">
