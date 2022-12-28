@@ -29,7 +29,7 @@
         <h4>Bill To:</h4>
         <pre><%= customer.billTo %></pre>
       </div>
-      <a href="/customers/editCustomer/<%= customer.id %>" class="btn btn-primary">Edit</a>
+      <a href="/customers/editCustomer/<%= customer.id %>" class="btn btn-primary">Edit Customer</a>
     </div>
     <div class="col-6 mt-5">
       <h5>Charge Limit</h5>
@@ -43,7 +43,7 @@
         <p>not exempt</p>
         <% } %>
       <h5>Current Balance</h5>
-      <p><%= customer.balance %></p>
+      <p>$ <%= customer.balance.toFixed(2) %></p>
       <h5>Date Added</h5>
       <p><%= customer.addedOn.toString() %></p>
     </div>
@@ -54,22 +54,31 @@
       New Invoice
     </a>
 
-    <h4>Invoices</h4>
-    <ul>
-    <% invoices.forEach( el => { %>
-      <% if (!isPaid) { %>
-            <li class='invoice' data-id='<%=el._id%>'>
-                <span><%= el.date %></span>
-                <span><%= el.total %></span>
-                <a class="btn btn-primary" href="/invoices/<%= el.id %>">View</a>
-            </li>
-      <% } %>
-    <% }) %>    
-    </ul>
-
-    <div class="col-6 mt-5">
-      <a class="btn btn-primary" href="/customers">Return to Customers</a>
-    </div>
+    <h4>Open Invoices</h4>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Invoice Number</th>
+        <th>Amount</th>
+      </tr>
+      <% invoices.forEach( invoice => { %>
+        <% if (!invoice.isPaid) { %>
+        <tr>
+          
+          <td>
+            <%= invoice.date.toLocaleDateString() %>
+          </td>
+          <td>
+            <a href="/invoices/viewInvoice/<%= invoice.id %>">
+              <%= invoice.number %>
+            </a>
+          </td>
+          <td>          
+            $ <%= invoice.total.toFixed(2) %>
+          </td>
+        </tr>
+      <% }}) %>
+    </table>
   </div>
 </div>
 

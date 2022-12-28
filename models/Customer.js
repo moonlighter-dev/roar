@@ -35,8 +35,9 @@ const CustomerSchema = new mongoose.Schema({
     default: null,
   },
   balance: {
-    type: String,
+    type: Number,
     required: true,
+    default: 0.00,
   },
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
