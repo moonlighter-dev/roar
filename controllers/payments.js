@@ -6,9 +6,9 @@ module.exports = {
   getPayment: async (req, res) => {
     try {
       const payment = await Payment.findById(req.params.id);
-      const customer = await Customer.findbyId(payment.customer)
+      const customer = await Customer.findById(payment.customer)
       const invoices = await Invoice.find({ paidBy: payment.id })
-      res.render("payment/payment.ejs", { payment: payment, customer: customer, invoices: invoices });
+      res.render("payment/payment.ejs", { payment: payment, customer: customer, invoices: invoices, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -16,7 +16,7 @@ module.exports = {
   newPayment: async (req, res) => {
     try {
       const customers = await Customer.find().lean();
-      res.render("payment/new-payment.ejs", { customers: customers });
+      res.render("payment/new-payment.ejs", { customers: customers, user: req.user });
     } catch (err) {
       console.log(err);
     }
@@ -29,22 +29,9 @@ module.exports = {
         customer: req.body.customer,
         amount: req.body.amount,
         tender: req.body.tender,
+        invoices: req.body.invoices,
       });
       console.log("Payment has been added!");
-
-      // Invoices selected as part of the req.body can be updated in the isPaid prop to true, and the paidBy prop to payment.id
-
-      const invoices = req.body.invoices
-
-      await invoices.forEach(invoice => {
-        Invoice.findOneAndUpdate(
-          { _id: invoice.id },
-          {
-            $set: { isPaid: true, paidBy: payment.id }
-          }
-        )
-      });
-      console.log('All invoices updated!')
 
       const customer = await Customer.findById(payment.customer)
       const newBalance = customer.balance - req.body.total
@@ -56,8 +43,33 @@ module.exports = {
         }
       )
       console.log("Customer balance successfully updated!")
+
+      //what if there is already a credit??
+
+
+      //iterate through the invoices
+      //while payment.total > 0...
+      // if payment.total > invoice.due
+      // invoice.due set to 0 and payment.total - invoice.due
+      // if invoice is overdue, set that amount to 0 too
+      // after all the invoices are iterated, what to do with the leftover payment? -- is it enough that it has already been applied to the overall balance?
+
+      await payment.invoices.forEach(invoice => {
+        
+        Invoice.findOneAndUpdate(
+          { _id: invoice.id },
+          {
+            $set: { 
+              isPaid: true, 
+              paidBy: payment._id,
+
+            }
+          }
+        )
+      });
+      console.log('All invoices updated!')
       
-      res.redirect(`/customer/${payment.customer}`);
+      res.redirect(`/customer/viewCustomer/${payment.customer}`);
     } catch (err) {
       console.log(err);
     }
@@ -93,7 +105,7 @@ module.exports = {
         }
       )
       console.log("Customer balance successfully updated!")
-      res.redirect(`/customer/${payment.customer}`);
+      res.redirect(`/customer/viewCustomer/${payment.customer}`);
     } catch (err) {
       res.redirect(`/customers`);
     }
