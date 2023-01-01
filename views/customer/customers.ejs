@@ -10,10 +10,6 @@
         </a>
     </div>
     <div class="row justify-content-center mt-5">
-      <!-- Make a payment -->
-      <a class="btn btn-primary" href="/payments/newPayment">Make Payment</a>
-    </div>
-    <div class="row justify-content-center mt-5">
       <a href="/customers/newCustomer/" class="btn btn-primary">
         New Customer
       </a>
@@ -34,6 +30,7 @@
           </td>
           <td>
             <!-- Balance Total -->
+            <!-- to fixed(2) once there are no strings -->
             $ <%= customers[i].balance %>
           </td>
           </tr>

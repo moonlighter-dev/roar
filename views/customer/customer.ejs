@@ -3,6 +3,10 @@
   <div class="row justify-content-center mt-5">
       <h2><%= customer.companyName %></h2>
       <h3><%= customer.fullName %></h3>
+      <div class="row justify-content-center mt-5">
+        <!-- Make a payment -->
+        <a class="btn btn-primary" href="/payments/newPayment/<%= customer._id %>">Make Payment</a>
+      </div>
     <div class="col-6 mt-5">
 
       <h4>Phone</h4>
@@ -45,11 +49,11 @@
       <h5>Current Balance</h5>
       <p>$ <%= customer.balance.toFixed(2) %></p>
       <h5>Date Added</h5>
-      <p><%= customer.addedOn.toString() %></p>
+      <p><%= customer.addedOn.toLocaleDateString() %></p>
     </div>
 
     <!-- Invoices!!!  -->
-
+    <div class="row justify-content-center mt-5">
     <h4>Open Invoices</h4>
     <table>
       <tr>
@@ -75,6 +79,35 @@
         </tr>
       <% }}) %>
     </table>
+    </div>
+    <div class="row justify-content-center mt-5">
+    <h4>Payments</h4>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Reference Number</th>
+        <th>Amount</th>
+      </tr>
+      <% payments.forEach( payment => { %>
+        <tr>
+          <td>
+            <%= payment.date.toLocaleDateString() %>
+          </td>
+          <td>
+            <form
+            action="/payments/deletePayment/<%= payment.id %>?_method=DELETE"
+            method="POST"
+            >
+            <button class="btn btn-danger fa fa-trash" type="submit"></button>
+            </form>
+          </td>
+          <td>          
+            $ <%= payment.amount.toFixed(2) %>
+          </td>
+        </tr>
+      <% }) %>
+    </table>
+    </div>
   </div>
 </div>
 

@@ -1,5 +1,6 @@
 const Customer = require("../models/Customer");
 const Invoice = require("../models/Invoice");
+const Payment = require("../models/Payment");
 
 module.exports = {
   getCustomers: async (req, res) => {
@@ -14,13 +15,14 @@ module.exports = {
     try {
       const customer = await Customer.findById(req.params.id);
       const invoices = await Invoice.find({ customer: customer.id })
-      res.render("customer/customer.ejs", { customer: customer, invoices: invoices, user: req.user });
+      const payments = await Payment.find({ customer: customer.id })
+      res.render("customer/customer.ejs", { customer: customer, invoices: invoices, payments: payments, user: req.user });
     } catch (err) {
       console.log(err);
     }
   },
   newCustomer: (req, res) => {
-    res.render("customer/new-customer.ejs")
+    res.render("customer/new-customer.ejs", { user: req.user })
   },
   createCustomer: async (req, res) => {
     console.log(req.body)
