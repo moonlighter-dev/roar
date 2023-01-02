@@ -36,6 +36,15 @@ module.exports = {
       const result = await cloudinary.uploader.upload(req.file.path);
       const customer = await Customer.findById(req.body.customer)
       const newBalance = (+customer.balance + req.body.total)
+      let dueAmt = req.body.total
+
+      if (+customer.balance < 0) {
+        if (dueAmt + customer.balance < 0) {
+          dueAmt = 0.00
+        } else {
+          dueAmt += customer.balance
+        }
+      }
 
       const invoice = await Invoice.create({
         // need this number to increment for every invoice created
@@ -45,6 +54,7 @@ module.exports = {
         total: req.body.total,
         image: result.secure_url,
         cloudinaryId: result.public_id,
+        due: dueAmt,
       });
       console.log("Invoice has been added!");
       
