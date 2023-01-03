@@ -1,45 +1,17 @@
 <%- include('../partials/header') -%>
 <div class="container">
   <div class="row justify-content-center mt-5">
-    <div class="col-6">
+    <div class="col-8">
       <div class="mt-5">
         <h2>Make a Payment</h2>
         <form action="/payments/createPayment" method="POST">
           <div class="mb-3">
             <!-- passes in the selected customer -->
-              <label for="customer" class="form-label"><%= customer.companyName %></label>
+              <label for="customer" class="form-label"><h3><%= customer.companyName %></h3></label>
+              <h3>Total Balance $ <%= customer.balance.toFixed(2) %></h3>
               <input type="hidden" class="form-control" id="customer" name="customer" value="<%= customer.id %>">
           </div>
-    <!-- Invoices!!!  -->
-    <div class="row justify-content-center mt-5">
-      <h4>Open Invoices</h4>
-      <table>
-        <tr>
-          <th>Date</th>
-          <th>Invoice Number</th>
-          <th>Amount</th>
-          <th>Select</th>
-        </tr>
-        <% invoices.forEach( invoice => { %>
-          <tr>
-            <td>
-              <%= invoice.date.toLocaleDateString() %>
-            </td>
-            <td>
-              <a href="/invoices/viewInvoice/<%= invoice.id %>">
-                <%= invoice.number %>
-              </a>
-            </td>
-            <td>          
-              $ <%= invoice.total.toFixed(2) %>
-            </td>
-            <td>
-              <input type="checkbox" id="<%= invoice.number %>" name="invoices" value="<%= invoice.id %>">
-            </td>
-          </tr>
-        <% }) %>
-      </table>
-      </div>
+      
           <div class="mb-3">
             <label for="date" class="form-label">Date</label>
             <input type="date" class="form-control" id="date" name="date">
@@ -62,6 +34,53 @@
                   <% }) %>
               </select>
           </div>
+              <!-- Invoices!!!  -->
+    <div class="row justify-content-center mt-5">
+      <h4>Open Invoices</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Date</th>
+            <th>Invoice</th>
+            <th>Total</th>
+            <th>Due</th>
+            <th>Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% invoices.forEach( invoice => { %>
+          <tr id="<%= invoice.id %>">
+            <td>
+              <input type="checkbox" id="<%= invoice.id %>" name="invoices" onchange="checkboxHandler(event)" value="<%= invoice.id %>" disabled>
+            </td>
+            <td>
+              <%= invoice.date.toLocaleDateString() %>
+            </td>
+            <td>
+              <a href="/invoices/viewInvoice/<%= invoice.id %>">
+                <%= invoice.number %>
+              </a>
+            </td>
+            <td>          
+              $ <%= invoice.total.toFixed(2) %>
+            </td>
+            <td class="due">
+              $ <%= invoice.due.toFixed(2) %>
+            </td>
+            <td class="paid">
+              $ 0.00
+            </td>
+          </tr>
+        <% }) %>
+        </tbody>
+        <tfoot>
+          <th scope="row" colspan="5">Total applied</th>
+          <td id="appliedPayment">$ 0.00</td>
+        </tfoot>
+      </table>
+    </div>
+          
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>

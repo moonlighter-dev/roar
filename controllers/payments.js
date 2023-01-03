@@ -14,10 +14,11 @@ module.exports = {
     }
   },
   newPayment: async (req, res) => {
-    console.log(req.body)
+    // console.log(req.params)
     try {
       const customer = await Customer.findById(req.params.id).lean();
-      const invoices = await Invoice.find({ customer: customer.id, isPaid: false })
+      const invoices = await Invoice.find({ customer: customer._id, isPaid: false }).sort({ date: 1 })
+      console.log(invoices)
       res.render("payment/new-payment.ejs", { customer: customer, invoices: invoices, user: req.user });
     } catch (err) {
       console.log(err);
@@ -35,60 +36,58 @@ module.exports = {
       });
       console.log("Payment has been added!");
 
+      const newBalance = customer.balance - payment.amount
 
-      const newBalance = customer.balance - req.body.total
+      if (unappliedCredit > 0.00) {
+        await Customer.findOneAndUpdate(
+          { _id: payment.customer },
+          {
+            $set: { balance: newBalance, credit: unappliedCredit }
+          }
+        )
+      } else {
+        await Customer.findOneAndUpdate(
+          { _id: payment.customer },
+          {
+            $set: { balance: newBalance }
+          }
+        )        
+      }
 
-      await Customer.findOneAndUpdate(
-        { _id: payment.customer },
-        {
-          $set: { balance: newBalance }
-        }
-      )
       console.log("Customer balance successfully updated!")
 
-      let paymentApplication = payment.amount
-
       await payment.invoices.forEach(invoice => {
+        // if (the payAmount is more than (or equal to) the invoice 
+        // set invoice.isPaid to true
+        // is there an overDue amount? set it to 0
 
-        if (paymentApplication > 0){
-          if (paymentApplication > invoice.due) {
-            paymentApplication -= invoice.due
+        // if the payAmount is less than the invoice amount
+        // is there an overDue amount? subtract the payAmount and update it
 
-            Invoice.findOneAndUpdate(
-              { _id: invoice.id },
-              {
-                $set: { 
-                  due: 0.00,
-                  overDue: 0.00,
-                  isPaid: true, 
-                  paidBy: payment._id,
-                  
-                }
+        if (!invoice.isPaid) {
+          Invoice.findOneAndUpdate(
+            { _id: invoice },
+            {
+              set: {
+                due: newDue, 
+                overDue: overDueUpdate,
               }
-            )
-          } else {
-            let remaining = invoice.due - paymentApplication
-            let updateOverDue = 0.00
-
-            if (invoice.overDue > 0) {
-              updateOverDue = invoice.overdue - paymentApplication
             }
-
-            paymentApplication = 0
-
-            Invoice.findOneAndUpdate(
-              { _id: invoice.id },
-              {
-                $set: { 
-                  due: remaining,
-                  overDue: updateOverDue,
-                }
-              }
-            )
+          )
+        } else {
+        Invoice.findOneAndUpdate(
+          { _id: invoice },
+          {
+            $set: { 
+              due: 0.00,
+              overDue: 0.00,
+              isPaid: true, 
+              paidBy: payment._id,
+              
+            }
           }
+        )
         }
-        
-
       });
       console.log('All invoices updated!')
       
@@ -102,7 +101,7 @@ module.exports = {
       // Find payment by id
       let payment = await Payment.findById(req.params.id);
       const customer = await Customer.findById(payment.customer)
-      const invoices = await Invoice.find({ paidBy: req.params.id})
+      const invoices = await Invoice.find({ paidBy: req.params.id })
       const newBalance = customer.balance + payment.total
 
       await invoices.forEach(invoice => {
