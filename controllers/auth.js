@@ -7,7 +7,8 @@ exports.getLogin = (req, res) => {
     return res.redirect("/customers");
   }
   res.render("login", {
-    title: "Login",
+    title: "Login", 
+    user: req.user,
   });
 };
 
