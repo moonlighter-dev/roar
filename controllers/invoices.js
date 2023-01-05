@@ -32,10 +32,9 @@ module.exports = {
   createInvoice: async (req, res) => {
     console.log(req.body)
     try {
-      // Upload image to cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path);
+
       const customer = await Customer.findById(req.body.customer)
-      const newBalance = (+customer.balance + req.body.total)
+      const newBalance = (customer.balance + +req.body.total)
       let dueAmt = req.body.total
 
       if (+customer.balance < 0) {
@@ -45,6 +44,17 @@ module.exports = {
           dueAmt += customer.balance
         }
       }
+
+      await Customer.findOneAndUpdate(
+        { _id: customer.id },
+        {
+          $set: { balance: newBalance }
+        }
+      )
+      console.log("Customer balance successfully updated!")
+
+      // Upload image to cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path);
 
       const invoice = await Invoice.create({
         // need this number to increment for every invoice created
@@ -58,13 +68,7 @@ module.exports = {
       });
       console.log("Invoice has been added!");
       
-      await Customer.findOneAndUpdate(
-        { _id: invoice.customer },
-        {
-          $set: { balance: newBalance.toString() }
-        }
-      )
-      console.log("Customer balance successfully updated!")
+
       res.redirect(`/customers/viewCustomer/${invoice.customer}`);
     } catch (err) {
       console.log(err);

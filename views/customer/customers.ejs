@@ -30,8 +30,7 @@
           </td>
           <td>
             <!-- Balance Total -->
-            <!-- to fixed(2) once there are no strings -->
-            $ <%= customers[i].balance %>
+            $ <%= customers[i].balance.toFixed(2) %>
           </td>
           </tr>
         <% } %>
