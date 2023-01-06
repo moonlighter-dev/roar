@@ -25,7 +25,8 @@ module.exports = {
     }
   },
   createPayment: async (req, res) => {
-
+    console.log(req.body)
+    const credit = req.body.amount - req.body.appliedPayment
     try {
       const payment = await Payment.create({
         number: req.body.number,
@@ -36,62 +37,63 @@ module.exports = {
       });
       console.log("Payment has been added!");
 
-      const newBalance = customer.balance - payment.amount
-
-      if (unappliedCredit > 0.00) {
+      if (credit > 0.00) {
         await Customer.findOneAndUpdate(
           { _id: payment.customer },
           {
-            $set: { balance: newBalance, credit: unappliedCredit }
+            $set: { credit: credit }
           }
         )
-      } else {
-        await Customer.findOneAndUpdate(
+        console.log("Remaining credit applied successfully!")
+      }
+      
+      await Customer.findOneAndUpdate(
           { _id: payment.customer },
           {
-            $set: { balance: newBalance }
+            $inc: { balance: -payment.amount }
           }
         )        
-      }
 
       console.log("Customer balance successfully updated!")
 
-      await payment.invoices.forEach(invoice => {
-        // if (the payAmount is more than (or equal to) the invoice 
-        // set invoice.isPaid to true
-        // is there an overDue amount? set it to 0
+      const invoices = req.body.invoices
 
-        // if the payAmount is less than the invoice amount
+      await invoices.forEach((invoice, index) => { 
+
+            // if the payAmount is less than the invoice amount
         // is there an overDue amount? subtract the payAmount and update it
+        const payAmt = req.body.payments[index]
+        const dueAmt = req.body.due[index]
+        let update = {}
 
-        if (!invoice.isPaid) {
-          Invoice.findOneAndUpdate(
-            { _id: invoice },
-            {
-              set: {
-                due: newDue, 
-                overDue: overDueUpdate,
+        console.log(payAmt, dueAmt)
+
+        if (payAmt == dueAmt) {
+          update = {
+              $set: {
+                isPaid: true, 
+                due: 0.00,
+                paidBy: payment.id,
               }
             }
-          )
         } else {
-        Invoice.findOneAndUpdate(
-          { _id: invoice },
-          {
-            $set: { 
-              due: 0.00,
-              overDue: 0.00,
-              isPaid: true, 
-              paidBy: payment._id,
-              
+          update = {
+            $inc: { 
+              due: -payAmt,
+            },
+            $set: {
+              paidBy: payment.id,
             }
           }
-        )
         }
+
+        Invoice.findOneAndUpdate(
+          { _id: invoice },
+          update
+        ).exec()
       });
-      console.log('All invoices updated!')
       
-      res.redirect(`/customer/viewCustomer/${payment.customer}`);
+      res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
       console.log(err);
     }
@@ -99,10 +101,10 @@ module.exports = {
   deletePayment: async (req, res) => {
     try {
       // Find payment by id
-      let payment = await Payment.findById(req.params.id);
-      const customer = await Customer.findById(payment.customer)
+      const payment = await Payment.findById(req.params.id);
       const invoices = await Invoice.find({ paidBy: req.params.id })
-      const newBalance = customer.balance + payment.total
+
+      console.log(payment)
 
       await invoices.forEach(invoice => {
         Invoice.findOneAndUpdate(
@@ -111,26 +113,28 @@ module.exports = {
             $set: { 
               isPaid: false, 
               paidBy: null,
-              due: invoice.amount,
-            }
+              due: invoice.total,
+            },
           }
-        )
+        ).exec()
       });
       console.log('All invoices updated!')
 
-      // Delete post from db
-      await Payment.remove({ _id: payment.id });
-      console.log("Deleted Payment");
-      
       await Customer.findOneAndUpdate(
         { _id: payment.customer },
         {
-          $set: { balance: newBalance }
+          $inc: { balance: payment.amount }
         }
       )
       console.log("Customer balance successfully updated!")
-      res.redirect(`/customer/viewCustomer/${payment.customer}`);
+
+      // Delete post from db
+      await Payment.deleteOne({ _id: payment.id });
+      console.log("Deleted Payment");
+
+      res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
+      console.log(err)
       res.redirect(`/customers`);
     }
   },
