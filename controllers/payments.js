@@ -58,9 +58,18 @@ module.exports = {
 
       const invoices = req.body.invoices
 
-      await invoices.forEach((invoice, index) => { 
+      if (invoices.length > 1) {
+        await updateInvoice(invoices[0], 0)
+      } else {
 
-            // if the payAmount is less than the invoice amount
+      await invoices.forEach((invoice, index) => { 
+        updateInvoice(invoice, index)
+
+      });
+      }
+
+      function updateInvoice(invoice, index) {
+        // if the payAmount is less than the invoice amount
         // is there an overDue amount? subtract the payAmount and update it
         const payAmt = req.body.payments[index]
         const dueAmt = req.body.due[index]
@@ -91,7 +100,7 @@ module.exports = {
           { _id: invoice },
           update
         ).exec()
-      });
+      }
       
       res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {

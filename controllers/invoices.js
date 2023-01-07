@@ -1,54 +1,108 @@
 const cloudinary = require("../middleware/cloudinary");
 const Invoice = require("../models/Invoice");
 const Customer = require("../models/Customer");
+const Payment = require("../models/Payment");
 
 module.exports = {
+  // view invoice and associated customer info
   getInvoice: async (req, res) => {
     try {
-      const invoice = await Invoice.findById(req.params.id);
-      const customer = await Customer.findById(invoice.customer)
-      res.render("invoice/invoice.ejs", { invoice: invoice, customer: customer, user: req.user });
+      const invoice = await Invoice
+        .findById(req.params.id)
+        .lean()
+      const customer = await Customer
+        .findById(invoice.customer)
+        .lean()
+
+      res.render("invoice/invoice.ejs", { 
+        invoice: invoice, 
+        customer: customer, 
+        user: req.user, 
+        page: "invoice", 
+      });
+
     } catch (err) {
       console.log(err);
     }
   },
+  // view invoices relating to a customer id param
   getInvoices: async (req, res) => {
     try {
-      const customer = await Customer.find({ id: req.params.id })
-      const invoices = await Invoice.find({ customer: customer }).sort({ date: 1 }).lean();
-      res.render("invoices.ejs", { invoices: invoices, user: req.user });
+      const customer = await Customer
+        .find({ id: req.params.id })
+        .lean()
+      const invoices = await Invoice
+        .find({ customer: customer })
+        .sort({ date: 1 })
+        .lean();
+
+      res.render("invoices.ejs", { 
+        invoices: invoices, 
+        user: req.user, 
+        page: "invoices", 
+      });
+
     } catch (err) {
       console.log(err);
     }
   },
+  // renders page with form to create a new invoice, passing in customers to populate the select field
   newInvoice: async (req, res) => {
     try {
-      const customers = await Customer.find().lean();
-      res.render("invoice/new-invoice.ejs", { customers: customers, user: req.user });
+      const customers = await Customer
+        .find()
+        .lean();
+
+      res.render("invoice/new-invoice.ejs", { 
+        customers: customers, 
+        user: req.user, 
+        page: 'new-invoice', 
+      });
+
     } catch (err) {
       console.log(err);
     }
   },
+  // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     try {
 
-      const customer = await Customer.findById(req.body.customer)
-      const newBalance = (customer.balance + +req.body.total)
-      let dueAmt = req.body.total
+      const customer = await Customer
+        .findById(req.body.customer)
+        .lean()
 
-      if (+customer.balance < 0) {
-        if (dueAmt + customer.balance < 0) {
+      let dueAmt = req.body.total
+      let creditLeft = 0
+      let isPaid = false
+      let paidBy = null
+
+      // if customer has a credit we want to apply that first
+
+      if (customer.credit > 0) {
+        const lastPayment = await Payment.findOne({ customer: customer.id })
+
+        paidBy = lastPayment.id
+        
+        if (dueAmt <= customer.credit) {
           dueAmt = 0.00
+          isPaid = true
+          creditLeft = customer.credit - dueAmt
         } else {
-          dueAmt += customer.balance
+          dueAmt -= customer.credit
+          creditLeft = 0.00
         }
       }
+
+      // we also want to update the customer balance
 
       await Customer.findOneAndUpdate(
         { _id: customer.id },
         {
-          $set: { balance: newBalance }
+          $inc: { balance: req.body.total }
+        },
+        {
+          $set: { credit: creditLeft }
         }
       )
       console.log("Customer balance successfully updated!")
@@ -57,7 +111,6 @@ module.exports = {
       const result = await cloudinary.uploader.upload(req.file.path);
 
       const invoice = await Invoice.create({
-        // need this number to increment for every invoice created
         number: req.body.number,
         date: req.body.date,
         customer: req.body.customer,
@@ -65,9 +118,11 @@ module.exports = {
         image: result.secure_url,
         cloudinaryId: result.public_id,
         due: dueAmt,
+        isPaid: isPaid,
+        paidBy: paidBy,
       });
+
       console.log("Invoice has been added!");
-      
 
       res.redirect(`/customers/viewCustomer/${invoice.customer}`);
     } catch (err) {
@@ -77,23 +132,41 @@ module.exports = {
   deleteInvoice: async (req, res) => {
     try {
       // Find invoice by id
-      let invoice = await Invoice.findById(req.params.id);
-      const customer = await Customer.findById(invoice.customer)
-      const newBalance = customer.balance - invoice.total
+      const invoice = await Invoice
+        .findById(req.params.id)
+        .lean()
+      const customer = await Customer
+        .findById(invoice.customer)
+        .lean()
+
       // Delete image from cloudinary
       await cloudinary.uploader.destroy(invoice.cloudinaryId);
+
       // Delete post from db
-      await Invoice.remove({ _id: req.params.id });
+      await Invoice
+        .remove({ _id: req.params.id });
+
       console.log("Deleted Invoice");
+
+      let credit = 0.00
+
+      if (customer.balance < invoice.total) {
+        credit = invoice.total - customer.balance
+      }
       
       await Customer.findOneAndUpdate(
         { _id: invoice.customer },
         {
-          $set: { balance: newBalance }
+          $inc: { balance: -invoice.total }
+        },
+        {
+          $set: { credit: credit }
         }
       )
       console.log("Customer balance successfully updated!")
+
       res.redirect(`/customers/viewCustomer/${invoice.customer}`);
+
     } catch (err) {
       res.redirect(`/customers`);
     }
