@@ -65,12 +65,11 @@
       <% invoices.forEach( invoice => { %>
         <% if (!invoice.isPaid) { %>
         <tr>
-          
           <td>
             <%= invoice.date.toLocaleDateString() %>
           </td>
           <td>
-            <a href="/invoices/viewInvoice/<%= invoice.id %>">
+            <a href="/invoices/viewInvoice/<%= invoice._id %>">
               <%= invoice.number %>
             </a>
           </td>

@@ -34,7 +34,7 @@ module.exports = {
         .find({ customer: customer._id })
         .lean()
       
-        console.log(invoices)
+        // console.log(invoices)
 
       res.render("customer/customer.ejs", { 
         customer: customer, 
