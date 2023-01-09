@@ -18,7 +18,7 @@
       <% if (!invoice.isPaid) { %>
         <!-- Deelaytay button -->
         <form
-        action="/invoices/deleteInvoice/<%= invoice.id %>?_method=DELETE"
+        action="/invoices/deleteInvoice/<%= invoice._id %>?_method=DELETE"
         method="POST"
         >
         <button class="btn btn-danger fa fa-trash" type="submit">Delete this Invoice</button>

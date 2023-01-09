@@ -80,7 +80,9 @@ module.exports = {
       // if customer has a credit we want to apply that first
 
       if (customer.credit > 0) {
-        const lastPayment = await Payment.findOne({ customer: customer.id })
+        const lastPayment = await Payment.findOne({ customer: customer._id })
+
+        console.log(lastPayment)
 
         paidBy = lastPayment.id
         
