@@ -49,10 +49,11 @@
           </tr>
         </thead>
         <tbody>
-        <% invoices.forEach( invoice => { %>
+        <% invoices.forEach( (invoice, index) => { %>
           <tr id="<%= invoice.id %>">
             <td>
               <input type="checkbox" id="<%= invoice.id %>" name="invoices" onchange="checkboxHandler(event)" value="<%= invoice.id %>" disabled>
+              <input type="hidden" id="payIndex" name="payIndex" value="<%= invoice.id %>">
             </td>
             <td>
               <%= invoice.date.toLocaleDateString() %>
