@@ -40,12 +40,6 @@
       <p>$ <%= customer.limit.toFixed(2) %></p>
       <h5>Terms</h5>
       <p><%= customer.terms %></p>
-      <h5>Tax Exempt Id</h5>
-      <% if (customer.taxId) { %>
-        <p><%= customer.taxId %></p>
-        <% } else { %>
-        <p>not exempt</p>
-        <% } %>
       <h5>Current Balance</h5>
       <p>$ <%= customer.balance.toFixed(2) %></p>
       <h5>Date Added</h5>

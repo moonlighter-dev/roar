@@ -43,7 +43,7 @@
       </div>
 
     <div class="col-6 mt-5">
-      <form action="/customers/deleteCustomer/<%= customer.id %>?_method=DELETE" method="POST" class="col-3">
+      <form action="/customers/deleteCustomer/<%= customer._id %>?_method=DELETE" method="POST" class="col-3">
       <button class="btn btn-danger fa fa-trash" type="submit">Delete this Customer</button>
       </form>
       <a class="btn btn-primary" href="/customers">Return to Customers</a>
