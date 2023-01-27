@@ -37,7 +37,7 @@
     </div>
     <div class="col-6 mt-5">
       <h5>Charge Limit</h5>
-      <p><%= customer.limit %></p>
+      <p>$ <%= customer.limit.toFixed(2) %></p>
       <h5>Terms</h5>
       <p><%= customer.terms %></p>
       <h5>Tax Exempt Id</h5>
@@ -59,7 +59,8 @@
       <tr>
         <th>Date</th>
         <th>Invoice Number</th>
-        <th>Amount</th>
+        <th>Total</th>
+        <th>Due</th>
       </tr>
       <% invoices.forEach( invoice => { %>
         <% if (!invoice.isPaid) { %>
@@ -75,6 +76,9 @@
           </td>
           <td>          
             $ <%= invoice.total.toFixed(2) %>
+          </td>
+          <td>          
+            $ <%= invoice.due.toFixed(2) %>
           </td>
         </tr>
       <% }}) %>

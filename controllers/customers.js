@@ -25,7 +25,7 @@ module.exports = {
     res.render("customer/new-customer.ejs", { user: req.user })
   },
   createCustomer: async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     try {
       await Customer.create({
         companyName: req.body.companyName,
@@ -56,7 +56,7 @@ module.exports = {
     }
   },
   updateCustomer: async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     try {
       await Customer.findOneAndUpdate(
         { _id: req.params.id },

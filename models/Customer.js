@@ -23,7 +23,7 @@ const CustomerSchema = new mongoose.Schema({
     required: true,
   },
   limit: {
-    type: String,
+    type: Number,
     required: true,
   },
   terms: {
@@ -37,6 +37,10 @@ const CustomerSchema = new mongoose.Schema({
   balance: {
     type: Number,
     required: true,
+    default: 0.00,
+  },
+  credit: {
+    type: Number,
     default: 0.00,
   },
   vendor: {
