@@ -113,7 +113,7 @@ module.exports = {
           altPhone: req.body.altPhone,
           email: req.body.email,
           billTo: req.body.billTo,
-          taxId: req.body.taxId,
+          limit: req.body.limit
         }
       );
 
