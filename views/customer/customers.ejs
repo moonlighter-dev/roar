@@ -1,22 +1,23 @@
 <%- include('../partials/header') -%>
-  <div class="container">
-    <div class="mt-5">
-      <p><strong>Welcome,</strong> <%= user.userName %>!</p>
-  
+  <div class="container mx-auto">
+    <div class="stats shadow">
+      <div class="stat">
+        <p><strong>Welcome,</strong> <%= user.userName %>!</p>
+      </div>
     </div>
-      <div class="row justify-content-center mt-5">
-        <a href="/invoices/newInvoice/" class="btn btn-primary">
+    <div class="text-center mt-5">
+        <a href="/invoices/newInvoice/" class="btn btn-wide btn-primary">
           New Invoice
         </a>
     </div>
-    <div class="row justify-content-center mt-5">
-      <a href="/customers/newCustomer/" class="btn btn-primary">
+    <div class="text-center mt-5">
+      <a href="/customers/newCustomer/" class="btn btn-wide btn-primary">
         New Customer
       </a>
     </div>
-    <div class="row justify-content-center mt-5">
+    <div class="overflow-x-auto pl-2">
       <!-- this should be a table -->
-      <table>
+      <table class="table table-zebra table-compact w-full">
         <tr>
           <th>Company Name</th>
           <th>Balance</th>
@@ -24,7 +25,7 @@
         <% for(var i = 0; i < customers.length; i++) { %>
           <tr>
             <td>
-            <a href="/customers/viewCustomer/<%= customers[i]._id%>">
+            <a class="link link-hover" href="/customers/viewCustomer/<%= customers[i]._id%>">
               <%= customers[i].companyName %>
             </a>
           </td>

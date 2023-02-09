@@ -1,110 +1,135 @@
 <%- include('../partials/header') -%>
-<div class="container">
-  <div class="row justify-content-center mt-5">
-      <h2><%= customer.companyName %></h2>
-      <h3><%= customer.fullName %></h3>
-      <div class="row justify-content-center mt-5">
-        <!-- Make a payment -->
+
+<div class="overflow-hidden shadow sm:rounded-lg">
+  <div class="flex w-full px-4 py-5 sm:px-6">
+      <div class="grid h-20 flex-grow card place-items-center">
+        <h3 class="text-lg font-medium leading-6">Customer Information</h3>
+        <p class="mt-1 max-w-2xl text-sm">Contact details, invoices, and payments</p>
+      </div>
+      <div class="divider divider-horizontal"></div>
+      <div class="grid h-20 flex-grow card place-items-center">
         <a class="btn btn-primary" href="/payments/newPayment/<%= customer._id %>">Make Payment</a>
+        <a class="btn btn-primary" href="/customers/editCustomer/<%= customer._id %>">Edit Customer</a>
       </div>
-    <div class="col-6 mt-5">
-
-      <h4>Phone</h4>
-      <% if (customer.phone) { %>
-      <span><%= customer.phone %></span>
-      <% } else { %>
-      <span>not entered</span>
-      <% } %>
-      <br>
-      <h4>Alt Phone</h4>
-      <% if (customer.altPhone) { %>
-      <span><%= customer.altPhone %></span>
-      <% } else { %>
-      <span>not entered</span>
-      <% } %>
-      <br>
-      <h4>email</h4>
-      <% if (customer.email) { %>
-      <span><%= customer.email %></span>
-      <% } else { %>
-        <span>not entered</span>
-      <% } %>
-      <div class="row">
-        <h4>Bill To:</h4>
-        <pre><%= customer.billTo %></pre>
+    </div>
+  </div>
+  <div class="pl-4">
+    <dl>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Company name</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.companyName %></dd>
       </div>
-      <a href="/customers/editCustomer/<%= customer._id %>" class="btn btn-primary">Edit Customer</a>
-    </div>
-    <div class="col-6 mt-5">
-      <h5>Charge Limit</h5>
-      <p>$ <%= customer.limit.toFixed(2) %></p>
-      <h5>Terms</h5>
-      <p><%= customer.terms %></p>
-      <h5>Current Balance</h5>
-      <p>$ <%= customer.balance.toFixed(2) %></p>
-      <h5>Date Added</h5>
-      <p><%= customer.addedOn.toLocaleDateString() %></p>
-    </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Full Name</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.fullName %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Current Balance</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= customer.balance.toFixed(2) %></dd>
+      </div>
 
-    <!-- Invoices!!!  -->
-    <div class="row justify-content-center mt-5">
-    <h4>Open Invoices</h4>
-    <table>
-      <tr>
-        <th>Date</th>
-        <th>Invoice Number</th>
-        <th>Total</th>
-        <th>Due</th>
-      </tr>
-      <% invoices.forEach( invoice => { %>
-        <% if (!invoice.isPaid) { %>
-        <tr>
-          <td>
-            <%= invoice.date.toLocaleDateString() %>
-          </td>
-          <td>
-            <a href="/invoices/viewInvoice/<%= invoice._id %>">
-              <%= invoice.number %>
-            </a>
-          </td>
-          <td>          
-            $ <%= invoice.total.toFixed(2) %>
-          </td>
-          <td>          
-            $ <%= invoice.due.toFixed(2) %>
-          </td>
-        </tr>
-      <% }}) %>
-    </table>
-    </div>
-    <div class="row justify-content-center mt-5">
-    <h4>Payments</h4>
-    <table>
-      <tr>
-        <th>Date</th>
-        <th>Reference Number</th>
-        <th>Amount</th>
-      </tr>
-      <% payments.forEach( payment => { %>
-        <tr>
-          <td>
-            <%= payment.date.toLocaleDateString() %>
-          </td>
-          <td>
-            <form
-            action="/payments/deletePayment/<%= payment._id %>?_method=DELETE"
-            method="POST"
-            >
-            <button class="btn btn-danger fa fa-trash" type="submit"></button>
-            </form>
-          </td>
-          <td>          
-            $ <%= payment.amount.toFixed(2) %>
-          </td>
-        </tr>
-      <% }) %>
-    </table>
-    </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Phone</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
+          <% if (customer.phone) { %>
+          <%= customer.phone %>
+          <% } else { %>
+          not entered
+          <% } %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Alt Phone</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
+          <% if (customer.altPhone) { %>
+          <%= customer.altPhone %>
+          <% } else { %>
+          not entered
+          <% } %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Email address</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
+          <% if (customer.email) { %>
+          <%= customer.email %>
+          <% } else { %>
+          not entered
+          <% } %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Charge Limit</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= customer.limit.toFixed(2) %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Bill To</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><pre><%= customer.billTo %></pre></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Date Added</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.addedOn.toLocaleDateString() %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Invoices</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+          <table>
+            <tr>
+              <th>Date</th>
+              <th>Invoice Number</th>
+              <th>Total</th>
+              <th>Due</th>
+            </tr>
+            <% invoices.forEach( invoice => { %>
+              <% if (!invoice.isPaid) { %>
+              <tr>
+                <td>
+                  <%= invoice.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <a href="/invoices/viewInvoice/<%= invoice._id %>">
+                    <%= invoice.number %>
+                  </a>
+                </td>
+                <td>          
+                  $ <%= invoice.total.toFixed(2) %>
+                </td>
+                <td>          
+                  $ <%= invoice.due.toFixed(2) %>
+                </td>
+              </tr>
+            <% }}) %>
+          </table>
+        </dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Payments</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+          <table>
+            <tr>
+              <th>Date</th>
+              <th>Reference Number</th>
+              <th>Amount</th>
+            </tr>
+            <% payments.forEach( payment => { %>
+              <tr>
+                <td>
+                  <%= payment.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <form
+                  action="/payments/deletePayment/<%= payment._id %>?_method=DELETE"
+                  method="POST"
+                  >
+                  <button class="btn btn-danger fa fa-trash" type="submit"></button>
+                  </form>
+                </td>
+                <td>          
+                  $ <%= payment.amount.toFixed(2) %>
+                </td>
+              </tr>
+            <% }) %>
+          </table>
+        </dd>
+      </div>
+    </dl>
   </div>
 </div>
 
