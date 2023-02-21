@@ -1,4 +1,5 @@
 const express = require("express");
+var expressLayouts = require('express-ejs-layouts');
 const app = express();
 const mongoose = require("mongoose");
 const passport = require("passport");
@@ -24,6 +25,10 @@ connectDB();
 
 //Using EJS for views
 app.set("view engine", "ejs");
+
+//Use EJS Layouts
+app.use(expressLayouts)
+app.set('layout', 'layouts/layout');
 
 //Static Folder
 app.use(express.static("public"));

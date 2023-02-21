@@ -2,8 +2,25 @@
   <div class="row justify-content-center mt-5">
     <div class="col-6">
       <div class="mt-5">
-        <h2>Add an Invoice</h2>
-        <form action="/invoices/createInvoice" enctype="multipart/form-data" method="POST">
+        <h2><%= user.companyName %> Daily Sales Summary</h2>
+        <h3><%= date.toLocaleDateString() %></h3>
+        <table>
+            
+        </table>
+        <!-- AR Report -->
+        <!-- amount -->
+        <!-- ROA -->
+        <!-- by payment type -->
+        <form action="/reports/createDaily">
+            <!-- Actual Drawer -->
+                <!-- inputs: -->
+                <!-- Check -->
+                <!-- CC Batch -->
+                <!-- Gift Card -->
+            <!-- Register X Close -->
+                <!-- inputs: -->
+                <!-- Cash, check credit, debit, charge, return, sub reg cash, gift cards sold, payouts, tax -->
+
           <div class="mb-3">
             <!-- select from customer list -->
               <label for="customer" class="form-label">Customer</label>

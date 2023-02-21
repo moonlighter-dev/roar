@@ -1,17 +1,6 @@
-<%- include('partials/header') -%>
     <main class="hero min-h-screen big-base-200 container">
         <div class="hero-content text-center">
             <section class="max-w-md">
-                <% if (locals.messages.errors) { %>
-                    <% messages.errors.forEach( el => { %>
-                        <div class="alert alert-danger"><%= el.msg %></div>
-                    <% }) %>    
-                <% } %>
-                <% if (locals.messages.info) { %>
-                    <% messages.info.forEach( el => { %>
-                        <div class="alert alert-info"><%= el.msg %></div>
-                    <% }) %>    
-                <% } %>
                 <form action="/signup" method="POST">
                     <div class="mb-3">
                         <label for="userName" class="form-label">User Name</label>
@@ -35,5 +24,3 @@
             </section>
         </div>
     </main>
-
-<%- include('partials/footer') -%>
