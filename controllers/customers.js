@@ -121,7 +121,65 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${req.params.id}`);
 
     } catch (err) {
-      console.log(err);
+      console.log(err)
+    }
+  },
+  // generate form for opening balances
+  openingBalances: async (req, res) => {
+    try {
+      const customers = await Customer.find().lean()
+
+      res.render('customer/opening-balances.ejs', { 
+        customers: customers, 
+        user: req.user, 
+        page: "opening-balances",
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  },
+  // apply opening balances to customer accounts
+  applyBalances: async (req, res) => {
+    try {
+      console.log(req.body)
+      const customers = req.body.customers
+      const balances = req.body['opening-balance']
+      let counter = 1
+      
+      await customers.forEach((customer, i) => {
+        if (balances[i] !== "0.00") {
+          updateCustomerBalance(customer, balances[i])
+          createOpeningBalance(balances[i], customer, counter)
+          counter++
+        }
+      })
+
+      console.log(`${counter} balances updated!`)
+      
+      async function updateCustomerBalance(id, balance) {
+        await Customer
+          .findOneAndUpdate(
+            { id: id }, 
+            { $inc: 
+              { balance: balance } 
+            })
+
+      }
+
+      async function createOpeningBalance(balance, customerId, counter) {
+        const invoiceNumber = "OP-00-" + counter
+        await Invoice.create({
+          number: invoiceNumber,
+          customer: customerId,
+          total: balance,
+          type: "opening-balance",
+        })
+      }
+
+      res.redirect("/customers")
+
+    } catch (err) {
+      console.log(err)
     }
   },
   // deeelaytay a customer
@@ -132,6 +190,7 @@ module.exports = {
       console.log("Deleted Customer");
       res.redirect("/customers");
     } catch (err) {
+      console.log(err)
       res.redirect(`/customer/${req.params.id}`);
     }
   },

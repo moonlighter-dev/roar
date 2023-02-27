@@ -122,6 +122,7 @@ module.exports = {
         due: dueAmt,
         isPaid: isPaid,
         paidBy: paidBy,
+        type: "invoice",
       });
 
       console.log("Invoice has been added!");

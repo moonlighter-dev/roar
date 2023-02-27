@@ -22,11 +22,11 @@ const InvoiceSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
+    
   },
   cloudinaryId: {
     type: String,
-    required: true,
+    
   },
   isPaid: {
     type: Boolean,
@@ -38,12 +38,16 @@ const InvoiceSchema = new mongoose.Schema({
   },
   overDue: {
     type: Number,
-    required: true,
     default: 0.00,
   },
   paidBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",
+  },
+  type: {
+    type: String,
+    required: true,
+    default: "invoice"
   }
 });
 

@@ -23,6 +23,12 @@ router.get("/editCustomer/:id", customersController.editCustomer);
 //Update a Customer
 router.put("/updateCustomer/:id", customersController.updateCustomer);
 
+//Go to Opening Balances Form
+router.get("/openingBalances", customersController.openingBalances);
+
+//Apply Opening Balances
+router.put("/openingBalances", customersController.applyBalances);
+
 //Deeelaytay a Customer
 router.delete("/deleteCustomer/:id", customersController.deleteCustomer);
 
