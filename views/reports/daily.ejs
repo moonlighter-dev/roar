@@ -1,58 +1,58 @@
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-6">
-      <div class="mt-5">
-        <h2><%= user.companyName %> Daily Sales Summary</h2>
-        <h3><%= date.toLocaleDateString() %></h3>
-        <table>
-            
-        </table>
-        <!-- AR Report -->
-        <!-- amount -->
-        <!-- ROA -->
-        <!-- by payment type -->
-        <form action="/reports/createDaily">
-            <!-- Actual Drawer -->
-                <!-- inputs: -->
-                <!-- Check -->
-                <!-- CC Batch -->
-                <!-- Gift Card -->
-            <!-- Register X Close -->
-                <!-- inputs: -->
-                <!-- Cash, check credit, debit, charge, return, sub reg cash, gift cards sold, payouts, tax -->
-
-          <div class="mb-3">
-            <!-- select from customer list -->
-              <label for="customer" class="form-label">Customer</label>
-              <select name="customer" class="form-control" id="customer" required>
-                <option value="" disabled selected>--Choose customer--</option>
-                <% customers.forEach(customer => { %>
-                  <option value="<%= customer._id %>"><%= customer.companyName %></option>
-                <% }) %>
-              </select>
-          </div>
-          <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" required>
-          </div>
-          <div class="mb-3">
-            <label for="total" class="form-label">Total</label>
-            <input type="number" step="0.01" class="form-control" id="total" name="total" required>
-          </div>
-          <div class="mb-3">
-            <label for="number" class="form-label">Invoice Number</label>
-            <input type="number" class="form-control" id="number" step="1" name="number" required>
-          </div>
-          <div class="mb-3">
-            <label for="imgUpload" class="form-label">Scan</label>
-            <input type="file" class="form-control" id="imageUpload" name="file" required>
-          </div>
-          <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
-        </form>
-      </div>
-
-    <div class="col-6 mt-5">
-      <a class="btn btn-primary" href="/customers">Return to Customers</a>
-    </div>
-  </div>
-</div>
+<div class="overflow-x-auto pl-2">
+    <h2>ROAR Daily Transaction Report</h2>
+    <h3><%= user.companyName %></h3>
+    <h4><%= date.toLocaleDateString %></h4>
+    <table class="table table-zebra table-compact w-full">
+        <thead>
+            <th colspan="3">Invoices</th>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Number</th>
+                <th>Customer</th>
+                <th>Amount</th>
+            </tr>
+            <% for(var i = 0; i < invoices.length; i++) { %>
+            <tr>
+                <td>
+                    <a class="link link-hover" href="/customers/viewCustomer/<%= invoices[i]._id%>">
+                        <%= invoices[i].number %>
+                    </a>
+                </td>
+                <td>
+                    <% const currentCustomer = customers.filter(customer => customer._id === invoices[i].customer) %>
+                    <%= currentCustomer.companyName %>
+                </td>
+                <td>
+                    $ <%= invoices[i].amount.toFixed(2) %>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <table class="table table-zebra table-compact w-full">
+        <thead>
+            <th colspan="3">Payments</th>
+        </thead>
+        <tr>
+            <th>Number</th>
+            <th>Customer</th>
+            <th>Amount</th>
+        </tr>
+        <% for(var i = 0; i < payments.length; i++) { %>
+        <tr>
+            <td>
+                <a class="link link-hover" href="/customers/viewCustomer/<%= payments[i]._id%>">
+                <%= payments[i].number %>
+            </a>
+          </td>
+          <td>
+            <% const currentCustomer = customers.filter(customer => customer._id === payments[i].customer) %>
+            <%= currentCustomer.companyName %>
+          </td>
+          <td>
+            $ <%= payments[i].amount.toFixed(2) %>
+          </td>
+          </tr>
+        <% } %>
+      </table>

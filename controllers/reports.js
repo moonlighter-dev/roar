@@ -1,6 +1,5 @@
 const Invoice = require("../models/Invoice")
 const Customer = require("../models/Customer")
-const Interest = require("../models/Interest")
 const Payment = require("../models/Payment")
 
 module.exports = {
@@ -110,6 +109,27 @@ module.exports = {
       console.log("Customer balance successfully updated!")
       
       res.redirect(`/customer/${payment.customer}`);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  createStatements: async (req, res) => {
+    try {
+      const customers = await Customer
+      .find()
+      .lean();
+      const invoices = await Invoice
+      .find()
+      .lean()
+      // iterate through customers and find those who had an open balance at the statement date
+      // create pdfs using a template that shares invoice information from the previous month
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  createInterest: async (req, res) => {
+    try {
+      
     } catch (err) {
       console.log(err);
     }
