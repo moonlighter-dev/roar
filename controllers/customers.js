@@ -142,7 +142,7 @@ module.exports = {
   applyBalances: async (req, res) => {
     try {
       console.log(req.body)
-      const customers = req.body.customers
+      const customers = req.body.id
       const balances = req.body['opening-balance']
       let counter = 1
       
@@ -167,12 +167,14 @@ module.exports = {
       }
 
       async function createOpeningBalance(balance, customerId, counter) {
-        const invoiceNumber = "OP-00-" + counter
+        const invoiceNumber = "OP-000" + counter
         await Invoice.create({
           number: invoiceNumber,
           customer: customerId,
           total: balance,
           type: "opening-balance",
+          due: balance,
+          date: Date.now()
         })
       }
 

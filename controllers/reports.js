@@ -31,7 +31,7 @@ module.exports = {
         invoices: invoices,
         payments: payments,
         customers: customers,
-        page: "newInterest", 
+        page: "daily", 
       });
     } catch (err) {
       console.log(err);
