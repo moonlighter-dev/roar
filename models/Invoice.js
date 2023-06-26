@@ -44,10 +44,12 @@ const InvoiceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",
   },
+  //regular invoices accumulate interest, finance charges do not
   type: {
     type: String,
     required: true,
-    default: "invoice"
+    enum: ['regular', 'finance-charge'],
+    default: "regular",
   }
 });
 

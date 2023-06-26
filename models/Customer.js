@@ -39,6 +39,11 @@ const CustomerSchema = new mongoose.Schema({
     required: true,
     default: 0.00,
   },
+  openingBalance: {
+    type: Number,
+    required: true,
+    default: 0.00,
+  },
   credit: {
     type: Number,
     default: 0.00,
