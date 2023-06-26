@@ -113,72 +113,13 @@ module.exports = {
           altPhone: req.body.altPhone,
           email: req.body.email,
           billTo: req.body.billTo,
-          limit: req.body.limit
+          limit: req.body.limit,
+          openingBalance: req.body.openingBalance,
         }
       );
 
       console.log("Customer updated!");
       res.redirect(`/customers/viewCustomer/${req.params.id}`);
-
-    } catch (err) {
-      console.log(err)
-    }
-  },
-  // generate form for opening balances
-  openingBalances: async (req, res) => {
-    try {
-      const customers = await Customer.find().lean()
-
-      res.render('customer/opening-balances.ejs', { 
-        customers: customers, 
-        user: req.user, 
-        page: "opening-balances",
-      })
-    } catch (err) {
-      console.log(err)
-    }
-  },
-  // apply opening balances to customer accounts
-  applyBalances: async (req, res) => {
-    try {
-      console.log(req.body)
-      const customers = req.body.id
-      const balances = req.body['opening-balance']
-      let counter = 1
-      
-      await customers.forEach((customer, i) => {
-        if (balances[i] !== "0.00") {
-          updateCustomerBalance(customer, balances[i])
-          createOpeningBalance(balances[i], customer, counter)
-          counter++
-        }
-      })
-
-      console.log(`${counter} balances updated!`)
-      
-      async function updateCustomerBalance(id, balance) {
-        await Customer
-          .findOneAndUpdate(
-            { id: id }, 
-            { $inc: 
-              { balance: balance } 
-            })
-
-      }
-
-      async function createOpeningBalance(balance, customerId, counter) {
-        const invoiceNumber = "OP-000" + counter
-        await Invoice.create({
-          number: invoiceNumber,
-          customer: customerId,
-          total: balance,
-          type: "opening-balance",
-          due: balance,
-          date: Date.now()
-        })
-      }
-
-      res.redirect("/customers")
 
     } catch (err) {
       console.log(err)
