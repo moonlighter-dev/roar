@@ -9,8 +9,7 @@ const ocrConfig = {
   preserve_interword_spaces: 1,
 };
 
-const ocr = {
-  scan: async function (req, res, next) {
+exports.scan = async (req, res, next) => {
     const worker = tesseract({
     lang: 'eng',
     whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,',
@@ -38,6 +37,3 @@ const ocr = {
     res.status(500).json({ error: 'An error occurred during OCR processing.' })
     }
   }
-}
-
-module.exports = ocr;

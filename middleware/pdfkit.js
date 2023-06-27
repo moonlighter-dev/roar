@@ -1,5 +1,42 @@
 const PDFDocument = require('pdfkit');
 
+exports.dailyReport = (req, res, next) => {
+        const doc = new PDFDocument();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="pdf_report.pdf"');
+
+        // Pipe the PDF document to the response
+        doc.pipe(res);
+
+        // Add content to the PDF
+        doc.fontSize(12).font('Helvetica-Bold').text('Daily Activity Report', { align: 'center' });
+
+        const columnWidth = (doc.page.width - 100) / 2;
+
+        //define table data
+        const tableHeadersAR = ["Invoice, Customer, Amount"]
+        const tableDataAR = req.body.tableDataAR
+        const tableHeadersX = ["Cash, Checks, Credit, Debit, Charge, Sub Reg Cash, Subtotal, Tax, Total, Returns, Payouts, Gift Cards Sold"]
+        const tableDataX = req.body.tableDataX
+        const tableHeadersRL = ["Cash, Checks, CC, Redeem GC"]
+        const tableDataRL = req.body.tableDataRL
+
+        // Generate the first table at position (50, 50)
+        const startY1 = 50;
+        const nextY1 = generateTable(doc, tableHeadersAR, tableDataAR, 50, startY1);
+
+        // Generate the second table at the position below the first table
+        const startY2 = nextY1;
+        const nextY2 = generateVerticalTable(doc, tableHeadersRL, tableDataRL, 50, startY2);
+
+        const startY3 = nextY2;
+        generateVerticalTable(doc, tableHeadersX, tableDataX, 50 + columnWidth, startY3)
+
+        // Finalize the PDF document
+        doc.end();
+    }
+
 function generateTableWithFooter(doc, headers, data, footer, x, y) {
     const tableProps = {
       headers,
@@ -56,47 +93,3 @@ function generateVerticalTable(doc, headers, data, x, y) {
     // Return the y-coordinate for the next element
     return y + tableHeight + 20; // Add some padding after the table
 }
-
-
-const pdfkit = {
-    dailyReport: function (req, res, next) {
-        const doc = new PDFDocument();
-
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="pdf_report.pdf"');
-
-        // Pipe the PDF document to the response
-        doc.pipe(res);
-
-        // Add content to the PDF
-        doc.fontSize(12).font('Helvetica-Bold').text('Daily Activity Report', { align: 'center' });
-
-        const columnWidth = (doc.page.width - 100) / 2;
-
-        //define table data
-        const tableHeadersAR = ["Invoice, Customer, Amount"]
-        const tableDataAR = req.body.tableDataAR
-        const tableHeadersX = ["Cash, Checks, Credit, Debit, Charge, Sub Reg Cash, Subtotal, Tax, Total, Returns, Payouts, Gift Cards Sold"]
-        const tableDataX = req.body.tableDataX
-        const tableHeadersRL = ["Cash, Checks, CC, Redeem GC"]
-        const tableDataRL = req.body.tableDataRL
-
-        // Generate the first table at position (50, 50)
-        const startY1 = 50;
-        const nextY1 = generateTable(doc, tableHeadersAR, tableDataAR, 50, startY1);
-
-        // Generate the second table at the position below the first table
-        const startY2 = nextY1;
-        const nextY2 = generateVerticalTable(doc, tableHeadersRL, tableDataRL, 50, startY2);
-
-        const startY3 = nextY2;
-        generateVerticalTable(doc, tableHeadersX, tableDataX, 50 + columnWidth, startY3)
-
-        // Finalize the PDF document
-        doc.end();
-    }
-
-
-}
-
-module.exports = pdfkit;

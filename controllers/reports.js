@@ -3,7 +3,7 @@ const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
 
 const pdfkit = require("../middleware/pdfkit")
-const ocr = require("../middleware/ocr")
+// const ocr = require("../middleware/ocr")
 
 module.exports = {
   getReports: async (req, res) => {
@@ -16,7 +16,7 @@ module.exports = {
       console.log(err);
     }
   },
-  newDaily: async (req, res) => {
+  createDaily: async (req, res) => {
     //incoming, date, actual drawer form data, scan from ocr
     try {
       const invoices = await Invoice
@@ -48,23 +48,6 @@ module.exports = {
       console.log(err);
     }
   },
-  newMonthly: async (req, res) => {
-    try {
-      const customers = await Customer
-        .find()
-        .lean();
-      const invoices = await Invoice
-        .find()
-        .lean()
-      res.render("interest/newInterest", { 
-        customers: customers,
-        invoices: invoices,
-        page: "newInterest", 
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  },
   newInterest: async (req, res) => {
     try {
       const customers = await Customer
@@ -82,7 +65,7 @@ module.exports = {
       console.log(err);
     }
   },
-  createDaily: async (req, res) => {
+  createInterest: async (req, res) => {
     // incoming: 
     try {
       const payment = await Payment.create({
@@ -137,48 +120,5 @@ module.exports = {
     } catch (err) {
       console.log(err);
     }
-  },
-  createInterest: async (req, res) => {
-    try {
-      
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  deleteInterest: async (req, res) => {
-    try {
-      // Find payment by id
-      let payment = await Payment.findById(req.params.id);
-      const customer = await Customer.findById(payment.customer)
-      const newBalance = customer.balance + payment.total
-
-      // also need to go the the invoices and mark them unpaid and remove the paidby data
-      const invoices = req.params.invoices
-
-      await invoices.forEach(invoice => {
-        Invoice.findOneAndUpdate(
-          { _id: invoice.id },
-          {
-            $set: { isPaid: false, paidBy: null }
-          }
-        )
-      });
-      console.log('All invoices updated!')
-
-      // Delete post from db
-      await Payment.remove({ _id: payment.id });
-      console.log("Deleted Payment");
-      
-      await Customer.findOneAndUpdate(
-        { _id: payment.customer },
-        {
-          $set: { balance: newBalance }
-        }
-      )
-      console.log("Customer balance successfully updated!")
-      res.redirect(`/customer/${payment.customer}`);
-    } catch (err) {
-      res.redirect(`/customers`);
-    }
-  },
-};
+  }
+}
