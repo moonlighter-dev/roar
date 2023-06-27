@@ -1,4 +1,4 @@
-module.exports = {
+const auth = {
   ensureAuth: function (req, res, next) {
     if (req.isAuthenticated()) {
       return next();
@@ -14,3 +14,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = auth;

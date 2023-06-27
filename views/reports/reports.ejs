@@ -1,20 +1,49 @@
-  <div class="container mx-auto">
-    <div class="mt-5">
-      <p><strong>Reports</strong></p>
-    </div>
+  <main>
+    <div class="container mx-auto">
+      <div class="mt-5">
+        <p><strong>Reports</strong></p>
+      </div>
+    <section>
       <div class="row input-group mt-5">
-        <a href="/reports/newDaily/" class="btn btn-primary">
-          Daily Reports
+        <h3>Daily Report</h3>
+        <form action="/reports/createDaily/" enctype="multipart/form-data" method="POST">
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+          </div>
+          <div class="mb-3">
+            <label for="checks" class="form-label">Total Checks</label>
+            <input type="number" step="0.01" class="form-control" id="checks" name="checks" required>
+          </div>
+          <div class="mb-3">
+            <label for="cc" class="form-label">CC Batch</label>
+            <input type="number" class="form-control" id="cc" step="0.01" name="cc" required>
+          </div>
+          <div class="mb-3">
+            <label for="redeemGC" class="form-label">Redeem GC</label>
+            <input type="number" class="form-control" id="redeemGC" step="0.01" name="redeemGC" required>
+          </div>
+          <div class="mb-3">
+            <label for="imgUpload" class="form-label">Global X</label>
+            <input type="file" class="form-control" id="imageUpload" name="file" required>
+          </div>
+          <button type="submit" class="btn btn-primary" value="Upload">Create</button>
+        </form>
+    </div>
+    </section>
+    <section>
+      <div class="row justify-content-center mt-5">
+        <a href="/reports/newInterest/" class="btn btn-primary">
+          Finance Charges
         </a>
-    </div>
-    <div class="row justify-content-center mt-5">
-      <a href="/reports/newInterest/" class="btn btn-primary">
-        Finance Charges
-      </a>
-    </div>
-    <div class="row justify-content-center mt-5">
-      <a href="/reports/newMonthly/" class="btn btn-primary">
-        Statements
-      </a>
-    </div>
+      </div>      
+    </section>
+    <section>
+      <div class="row justify-content-center mt-5">
+        <a href="/reports/newMonthly/" class="btn btn-primary">
+          Statements
+        </a>
+      </div>      
+    </section>
   </div>  
+</main>
