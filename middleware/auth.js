@@ -1,4 +1,4 @@
-const auth = {
+module.exports = {
   ensureAuth: function (req, res, next) {
     if (req.isAuthenticated()) {
       return next();
@@ -13,6 +13,4 @@ const auth = {
       res.redirect("/dashboard");
     }
   },
-};
-
-module.exports = auth;
+}
