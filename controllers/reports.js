@@ -3,7 +3,7 @@ const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
 
 const pdfkit = require("../middleware/pdfkit")
-// const ocr = require("../middleware/ocr")
+const ocr = require("../middleware/ocr")
 
 module.exports = {
   getReports: async (req, res) => {
