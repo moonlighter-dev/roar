@@ -17,6 +17,8 @@ module.exports = {
     }
   },
   createDaily: async (req, res) => {
+    // console.log('File:', req.file);
+    // console.log(req.body)
     //incoming, date, actual drawer form data, scan from ocr
     try {
       const invoices = await Invoice
@@ -31,7 +33,7 @@ module.exports = {
 
       // we're not even going to upload the file passed through here. we're just going to ocr it and pass the data to populate the report
 
-      console.log(invoices)
+      
 
       const tableDataAR = invoices.map(invoice => {
         const customer = customers.find(cust => cust.id === invoice.customer)
@@ -40,9 +42,11 @@ module.exports = {
 
       const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
 
-      const tableDataX = ocr.scan(req.file.path)
+      const tableDataX = ocr.scan(req.file)
 
-      pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
+      console.log(tableDataRL, tableDataX)
+
+      // pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
 
     } catch (err) {
       console.log(err);
