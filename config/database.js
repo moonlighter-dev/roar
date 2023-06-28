@@ -1,23 +1,16 @@
-const express = require("express");
-const app = express();
+const mongoose = require('mongoose');
 const MongoStore = require("connect-mongo");
-const session = require("express-session");
-
+let sessionStore
 
 const connectDB = async () => {
   try {
-
-    // Setup Sessions - stored in MongoDB
-    app.use(
-      session({
-        secret: "keyboard cat",
-        resave: false,
-        saveUninitialized: false,
-        store: MongoStore.create({ 
-          mongoUrl: process.env.DB_STRING,
-        }),
+    await mongoose.connect(process.env.DB_STRING, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
       })
-    );
+    sessionStore = MongoStore.create({
+      mongoUrl: process.env.DB_STRING,
+    });
 
     console.log(`MongoDB Connected!`);
   } catch (err) {
@@ -26,4 +19,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+module.exports = { connectDB, sessionStore };
