@@ -1,7 +1,7 @@
 const Invoice = require("../models/Invoice")
 const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
-
+const fs = require('fs');
 const pdfkit = require("../middleware/pdfkit")
 const ocr = require("../middleware/ocr")
 
@@ -17,9 +17,10 @@ module.exports = {
     }
   },
   createDaily: async (req, res) => {
-    // console.log('File:', req.file);
+    console.log('File:', req.file);
     // console.log(req.body)
     //incoming, date, actual drawer form data, scan from ocr
+    const file = req.file
     try {
       const invoices = await Invoice
         .find({ date: req.body.date })
@@ -29,20 +30,17 @@ module.exports = {
         .lean()
       const customers = await Customer
         .find()
-        .lean()
-
-      // we're not even going to upload the file passed through here. we're just going to ocr it and pass the data to populate the report
-
-      
+        .lean()   
 
       const tableDataAR = invoices.map(invoice => {
         const customer = customers.find(cust => cust.id === invoice.customer)
         [invoice.number, customer.companyName, invoice.total]
       })
 
+
       const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
 
-      const tableDataX = ocr.scan(req.file)
+      const tableDataX = await ocr.scan(file.path)
 
       console.log(tableDataRL, tableDataX)
 
