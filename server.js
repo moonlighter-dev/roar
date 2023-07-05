@@ -12,6 +12,7 @@ const invoiceRoutes = require("./routes/invoices");
 const paymentRoutes = require("./routes/payments");
 const reportRoutes = require("./routes/reports");
 const expressLayouts = require('express-ejs-layouts');
+const pdf = require('express-pdf');
 
 //Use .env file in config folder
 require("dotenv").config({ path: "./config/.env" })
@@ -32,12 +33,12 @@ app.use(
   })
 );
 
-//Using EJS for views
-app.set("view engine", "ejs")
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
 
-//Use EJS Layouts
-app.use(expressLayouts)
-app.set("layout", "layouts/layout")
+//Use flash messages for errors, info, ect...
+app.use(flash());
 
 //Static Folder
 app.use(express.static("public"))
@@ -49,15 +50,18 @@ app.use(express.json())
 //Logging
 app.use(logger("dev"))
 
+//Using EJS for views
+app.set("view engine", "ejs")
+
+//Use EJS Layouts
+app.use(expressLayouts)
+app.set("layout", "layouts/layout")
+
 //Use forms for put / delete
 app.use(methodOverride("_method"))
 
-// Passport middleware
-app.use(passport.initialize())
-app.use(passport.session())
-
-//Use flash messages for errors, info, ect...
-app.use(flash());
+//Use express-pdf to serve pdf files to the browser
+app.use(pdf)
 
 //Setup Routes For Which The Server Is Listening
 app.use("/", mainRoutes)

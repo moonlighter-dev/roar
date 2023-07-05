@@ -4,6 +4,7 @@ const Payment = require("../models/Payment")
 const fs = require('fs');
 const pdfkit = require("../middleware/pdfkit")
 const ocr = require("../middleware/ocr")
+const pdf = require("../middleware/pdf")
 
 module.exports = {
   getReports: async (req, res) => {
@@ -19,9 +20,15 @@ module.exports = {
   createDaily: async (req, res) => {
     console.log('File:', req.file);
     // console.log(req.body)
-    //incoming, date, actual drawer form data, scan from ocr
-    const file = req.file
+    // Process the file upload and store the file information in the session
+    const tmpFilePath = req.file.path;
+    req.session.tmpFilePath = tmpFilePath;
+
     try {
+      const valPath = await pdf.validatePDF(req.session.tmpFilePath)
+      console.log(valPath)
+      const png = await pdf.convertPDFToPNG(tmpFilePath)
+      console.log(png)
       const invoices = await Invoice
         .find({ date: req.body.date })
         .lean()
@@ -40,9 +47,11 @@ module.exports = {
 
       const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
 
-      const tableDataX = await ocr.scan(file.path)
+      // res.redirect('/pdf' + req.session.tmpFilePath)
 
-      console.log(tableDataRL, tableDataX)
+      const tableDataX = await ocr.scan(png)
+
+      console.log("Values entered:", tableDataRL, "Values uploaded:", tableDataX)
 
       // pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
 
