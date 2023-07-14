@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth");
 const homeController = require("../controllers/home");
-const pdfController = require("../controllers/pdf");
+const posController = require("../controllers/pos");
 const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Main Routes
@@ -15,7 +15,7 @@ router.get("/logout", authController.logout);
 router.get("/signup", authController.getSignup);
 router.post("/signup", authController.postSignup);
 
-//PDF Routes
-router.get("/pdf/tmp/:filename", pdfController.viewPDF)
+//POS Routes
+router.post("/pos", ensureAuth, posController.readFile)
 
 module.exports = router;

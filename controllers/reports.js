@@ -25,10 +25,19 @@ module.exports = {
     req.session.tmpFilePath = tmpFilePath;
 
     try {
+      //Validate the PDF
       const valPath = await pdf.validatePDF(req.session.tmpFilePath)
       console.log(valPath)
-      const png = await pdf.convertPDFToPNG(tmpFilePath)
+
+      //Convert to PNG
+      const png = await pdf.convertPDFToPNG(valPath)
       console.log(png)
+
+      // res.redirect('/pdf' + req.session.tmpFilePath)
+      //Scan PNG File with OCR
+      // const tableDataX = await ocr.scan(png)
+
+      //Assemble data for the selected date
       const invoices = await Invoice
         .find({ date: req.body.date })
         .lean()
@@ -47,11 +56,7 @@ module.exports = {
 
       const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
 
-      // res.redirect('/pdf' + req.session.tmpFilePath)
-
-      const tableDataX = await ocr.scan(png)
-
-      console.log("Values entered:", tableDataRL, "Values uploaded:", tableDataX)
+      // console.log("Values entered:", tableDataRL, "Values uploaded:", tableDataX)
 
       // pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
 
