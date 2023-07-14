@@ -3,8 +3,6 @@ const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
 const fs = require('fs');
 const pdfkit = require("../middleware/pdfkit")
-const ocr = require("../middleware/ocr")
-const pdf = require("../middleware/pdf")
 
 module.exports = {
   getReports: async (req, res) => {
@@ -18,24 +16,9 @@ module.exports = {
     }
   },
   createDaily: async (req, res) => {
-    console.log('File:', req.file);
-    // console.log(req.body)
-    // Process the file upload and store the file information in the session
-    const tmpFilePath = req.file.path;
-    req.session.tmpFilePath = tmpFilePath;
+    console.log('Report Data:', req.reportData);
 
     try {
-      //Validate the PDF
-      const valPath = await pdf.validatePDF(req.session.tmpFilePath)
-      console.log(valPath)
-
-      //Convert to PNG
-      const png = await pdf.convertPDFToPNG(valPath)
-      console.log(png)
-
-      // res.redirect('/pdf' + req.session.tmpFilePath)
-      //Scan PNG File with OCR
-      // const tableDataX = await ocr.scan(png)
 
       //Assemble data for the selected date
       const invoices = await Invoice

@@ -12,7 +12,6 @@ const invoiceRoutes = require("./routes/invoices");
 const paymentRoutes = require("./routes/payments");
 const reportRoutes = require("./routes/reports");
 const expressLayouts = require('express-ejs-layouts');
-const pdf = require('express-pdf');
 
 //Use .env file in config folder
 require("dotenv").config({ path: "./config/.env" })
@@ -59,9 +58,6 @@ app.set("layout", "layouts/layout")
 
 //Use forms for put / delete
 app.use(methodOverride("_method"))
-
-//Use express-pdf to serve pdf files to the browser
-app.use(pdf)
 
 //Setup Routes For Which The Server Is Listening
 app.use("/", mainRoutes)
