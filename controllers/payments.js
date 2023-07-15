@@ -23,6 +23,63 @@ module.exports = {
       console.log(err);
     }
   },
+  // JSON
+  getPaymentJSON: async (req, res) => {
+    try {
+      const payment = await Payment
+        .findById(req.params.id)
+        .lean()
+      const customer = await Customer
+        .findById(payment.customer)
+        .lean()
+      const invoices = await Invoice
+        .find({ paidBy: payment.id })
+        .lean()
+
+      res.json(payment, customer, invoices);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  paymentsByDateJSON: async (req, res) => {
+    try {
+      const payments = await Payment
+        .findById(req.params.date)
+        .lean()
+        // need to go through payments and add customer and invoice info
+      const customer = await Customer
+        .findById(payments.customer)
+        .lean()
+      const invoices = await Invoice
+        .find({ paidBy: payments.id })
+        .lean()
+
+      res.json(payments, customer, invoices);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  paymentsByCustomerJSON: async (req, res) => {
+    try {
+      const payments = await Payment
+        .findById(req.params.customer)
+        .lean()
+      const customer = await Customer
+        .findById(req.params.customer)
+        .lean()
+      const invoices = await Invoice
+        .find({ paidBy: payments.id })
+        .lean()
+
+      res.json(payments, customer, invoices);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  //Go to new payment input
   newPayment: async (req, res) => {
     // console.log(req.params)
     try {

@@ -6,6 +6,11 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Invoice Routes
 
+//JSON READ Operations
+router.get("/json/:date", invoicesController.invoicesByDateJSON)
+router.get("/json/:customer", invoicesController.invoicesByCustomerJSON)
+router.get("/json/:id", invoicesController.getInvoiceJSON)
+
 //Get all Invoices - not used at this time
 router.get("/", ensureAuth, invoicesController.getInvoices)
 

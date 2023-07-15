@@ -1,6 +1,34 @@
 const path = require("path")
+const POS = require("../models/POS");
+
+function processText(text) {
+  //parameters: a string
+  // return: an object
+  // classify text and handle accordingly
+  // 
+}
 
 module.exports = {
+    getPOS: (req, res) => {
+        try {
+          
+          const station = POS.find({ id: req.posId }).lean()
+          
+          res.json(station)
+
+        } catch (err) {
+          console.log(err)
+        }
+    },
+    startPOS: (req, res) => {
+      // do global first
+      // see if file path exists
+      // if it does, apply chokidar to it
+      // if not, request and then apply
+    },
+    stopPOS: (req, res) => {
+
+    },
     readFile: (req, res) => {
       const text = req.file.text
       // This text is uploaded printing results from the register.
@@ -12,5 +40,7 @@ module.exports = {
         //   user: req.user,
         //   page: "pos",
         // });
+
+
       },
 }

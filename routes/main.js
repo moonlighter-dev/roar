@@ -16,6 +16,9 @@ router.get("/signup", authController.getSignup);
 router.post("/signup", authController.postSignup);
 
 //POS Routes
+router.get("/pos", posController.getPOS)
+router.put("/pos", posController.startPOS)
 router.post("/pos", ensureAuth, posController.readFile)
+router.delete("/pos", posController.stopPOS)
 
 module.exports = router;
