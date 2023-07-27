@@ -13,7 +13,11 @@
               <!-- <li><a>Company Settings</a></li> -->
             </ul>
           </div>
-            <%= user.userName %>
+            <% if (user) { %>
+              <%= user.userName %>
+            <% } else { %>
+              Stranger
+            <% } %>
         </div>
         <div class="navbar-center">
           <a class="btn btn-ghost normal-case text-xl" href="/customers/">ROAR</a>

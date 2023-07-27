@@ -61,6 +61,10 @@
         <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= customer.limit.toFixed(2) %></dd>
       </div>
       <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium">Opening Balance</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= //customer.openingBalance.toFixed(2) %></dd>
+      </div>
+      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
         <dt class="text-sm font-medium">Bill To</dt>
         <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><pre><%= customer.billTo %></pre></dd>
       </div>

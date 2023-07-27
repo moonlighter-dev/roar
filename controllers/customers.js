@@ -97,6 +97,7 @@ module.exports = {
         terms: req.body.terms,
         taxId: req.body.taxId,
         balance: 0.00,
+        openingBalance: req.body.openingBalance,
         credit: 0.00,
         vendor: req.user.id,
         addedOn: Date.now(),
