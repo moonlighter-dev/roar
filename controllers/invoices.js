@@ -111,6 +111,23 @@ module.exports = {
       console.log(err);
     }
   },
+    // sanitizes the input from the watcher
+    autoInvoice: async (req, res) => {
+      try {
+        // const customers = await Customer
+        //   .find()
+        //   .lean();
+  
+        // res.render("invoice/new-invoice.ejs", { 
+        //   customers: customers, 
+        //   user: req.user, 
+        //   page: 'new-invoice', 
+        // });
+  
+      } catch (err) {
+        console.log(err);
+      }
+    },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
     // console.log(req.body)

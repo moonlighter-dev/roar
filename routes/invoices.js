@@ -20,6 +20,9 @@ router.get("/viewInvoice/:id", invoicesController.getInvoice);
 //Go to New Invoice Form
 router.get("/newInvoice", invoicesController.newInvoice);
 
+//Posting invoices through POS
+router.post("/autoInvoice", invoicesController.autoInvoice)
+
 //Create a new Invoice (using form input)
 router.post("/createInvoice", upload.single("file"), invoicesController.createInvoice);
 

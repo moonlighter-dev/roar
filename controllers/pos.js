@@ -1,46 +1,89 @@
 const path = require("path")
+const chokidar = reqire("../middleware/chokidar")
 const POS = require("../models/POS");
-
-function processText(text) {
-  //parameters: a string
-  // return: an object
-  // classify text and handle accordingly
-  // 
-}
+const Customer = require("../models/Customer")
 
 module.exports = {
-    getPOS: (req, res) => {
+    getDashboard: async (req, res) => {
         try {
           
-          const station = POS.find({ id: req.posId }).lean()
+          const stations = await POS.find({ vendor: req.user.id }).lean()
+          //customers
+          //reports
+          //settings (user)
           
-          res.json(station)
+          res.render("dashboard.ejs", {
+            stations: stations,
+            // this will have status of the pos, button to add, settings, clients, and reports
+          })
 
         } catch (err) {
           console.log(err)
         }
     },
-    startPOS: (req, res) => {
-      // do global first
-      // see if file path exists
-      // if it does, apply chokidar to it
-      // if not, request and then apply
-    },
-    stopPOS: (req, res) => {
+    startPOS: async (req, res) => {
+      try {
+        const station = await POS.findOneAndUpdate({ id: req.params.id }).lean()
+        // set isActive to true
+        // set journalPath to the selected path
 
+        chokidar.watchJournal(station.journalPath)
+
+        res.refresh()
+      } catch (err) {
+      console.log(err)
+      }
+    },
+    stopPOS: async (req, res) => {
+      try {
+      const pos = await POS.findOne({ id: req.params.id })
+
+      // update POS, change isActive to false and journal path to null
+      res.refresh()
+
+      } catch (err) {
+        console.log(err)
+      }
     },
     readFile: (req, res) => {
-      const text = req.file.text
-      // This text is uploaded printing results from the register.
-      // We want to determine what category it is and format the data accordingly.
-      // Then we can send the data on (redirect) to invoices controller, reports controller or ignore it.
-      // I can also consider doing some of this processing on the app that will be watching the file and sending the post request.
-      // Error handling: if there is an error posting the data and redirecting, it needs to let the user know so they can enter the information manually
-        // res.render("pos/pos.ejs", { 
-        //   user: req.user,
-        //   page: "pos",
-        // });
+      const record = parseTextData(req.file.text)
+      console.log(record)
+      
+      if (record.keys().includes("custCharge")){
+        const customer = Customer.findOne({ fullName: record.name }).lean()
+        // create a new invoice using the data in record
+        // res.redirect("/invoice/createInvoice", { user, record, customer })
+      }
+      if (record.type === "CLOSE") {
+        // if the invoice number ends in x,
+        // create a new daily report
+        // res.redirect("/reports/createDaily", { user, record })
+      }
 
+        function parseTextData(text) {
+          const lines = text.split('\n').map(line => line.trim());
+        
+          const header = lines[1].split(/\s+/);
+          const date = header[2];
+        
+          const type = lines[3].trim().split(/\s+/)[0].toLowerCase();
+        
+          const totalTax = parseFloat(lines[5].split(/\s+/)[2]);
+        
+          const sales = {};
+          const salesLines = lines.slice(8, 19);
+          salesLines.forEach(line => {
+            const [saleType, amount] = line.trim().split(/\s+/);
+            sales[saleType.toLowerCase()] = parseFloat(amount);
+          });
+        
+          return {
+            date,
+            type,
+            totalTax,
+            ...sales
+          };
+        }
 
       },
 }

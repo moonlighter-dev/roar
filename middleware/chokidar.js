@@ -3,6 +3,10 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+
+module.exports = {
+watchJournal: () => {
+
 const filePath = path.join(__dirname, 'WOODSAW.JNL');
 
 // Watch the file for changes
@@ -22,9 +26,7 @@ watcher.on('change', () => {
     const updatedText = data.toString();
     const postData = { text: updatedText };
 
-    // Make an HTTP POST request to your web app
-    // using a library like axios or fetch
-    // Here's an example using axios:
+    // Make an HTTP POST request
     axios.post('/pos', postData)
       .then(() => {
         console.log('File change uploaded successfully!');
@@ -34,3 +36,5 @@ watcher.on('change', () => {
       });
   });
 });
+}
+}
