@@ -5,6 +5,11 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Payment Routes
 
+//JSON READ Operations
+router.get("/json/:date", paymentsController.paymentsByDateJSON)
+router.get("/json/:customer", paymentsController.paymentsByCustomerJSON)
+router.get("/json/:id", paymentsController.getPaymentJSON)
+
 //Get One Payment
 router.get("/viewPayment/:id", paymentsController.getPayment);
 

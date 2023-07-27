@@ -1,9 +1,8 @@
 const Invoice = require("../models/Invoice")
 const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
-
+const fs = require('fs');
 const pdfkit = require("../middleware/pdfkit")
-// const ocr = require("../middleware/ocr")
 
 module.exports = {
   getReports: async (req, res) => {
@@ -17,8 +16,11 @@ module.exports = {
     }
   },
   createDaily: async (req, res) => {
-    //incoming, date, actual drawer form data, scan from ocr
+    console.log('Report Data:', req.reportData);
+
     try {
+
+      //Assemble data for the selected date
       const invoices = await Invoice
         .find({ date: req.body.date })
         .lean()
@@ -27,22 +29,19 @@ module.exports = {
         .lean()
       const customers = await Customer
         .find()
-        .lean()
-
-      // we're not even going to upload the file passed through here. we're just going to ocr it and pass the data to populate the report
-
-      console.log(invoices)
+        .lean()   
 
       const tableDataAR = invoices.map(invoice => {
         const customer = customers.find(cust => cust.id === invoice.customer)
         [invoice.number, customer.companyName, invoice.total]
       })
 
+
       const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
 
-      const tableDataX = ocr.scan(req.file.path)
+      // console.log("Values entered:", tableDataRL, "Values uploaded:", tableDataX)
 
-      pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
+      // pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
 
     } catch (err) {
       console.log(err);

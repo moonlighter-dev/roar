@@ -25,6 +25,54 @@ module.exports = {
       console.log(err);
     }
   },
+  //JSON
+  getInvoiceJSON: async (req, res) => {
+    try {
+      const invoice = await Invoice
+        .findById(req.params.id)
+        .lean()
+      const customer = await Customer
+        .findById(invoice.customer)
+        .lean()
+
+      res.json(invoice, customer);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  invoicesByDateJSON: async (req, res) => {
+    try {
+      const invoices = await Invoice
+        .find({ date: req.params.date })
+        .lean()
+        //TODO loop though invoices and assemble customer data to match
+      const customers = await Customer
+        .findById(invoices.customer)
+        .lean()
+
+      res.json(invoices, customers);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  invoicesByCustomerJSON: async (req, res) => {
+    try {
+      const customer = await Customer
+        .find({ id: req.params.id })
+        .lean()
+      const invoices = await Invoice
+        .find({ customer: customer })
+        .sort({ date: 1 })
+        .lean();
+
+      res.json(customer, invoices);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
   // view invoices relating to a customer id param
   getInvoices: async (req, res) => {
     try {
@@ -63,6 +111,23 @@ module.exports = {
       console.log(err);
     }
   },
+    // sanitizes the input from the watcher
+    autoInvoice: async (req, res) => {
+      try {
+        // const customers = await Customer
+        //   .find()
+        //   .lean();
+  
+        // res.render("invoice/new-invoice.ejs", { 
+        //   customers: customers, 
+        //   user: req.user, 
+        //   page: 'new-invoice', 
+        // });
+  
+      } catch (err) {
+        console.log(err);
+      }
+    },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
     // console.log(req.body)
@@ -71,6 +136,10 @@ module.exports = {
       const customer = await Customer
         .findById(req.body.customer)
         .lean()
+
+      // This will only automate if the customer is already in the database.
+      // TODO when converting to React, feature a component here to add a customer on the fly
+      // because we have to have a cust id on the invoice.
 
       let dueAmt = req.body.total
       let creditLeft = 0

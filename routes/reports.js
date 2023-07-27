@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/multer");
 const reportsController = require("../controllers/reports");
 const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Report Routes
 
 //Get Reports Menu
-router.get("/", reportsController.getReports);
+router.get("/", ensureAuth, reportsController.getReports);
 
 //Create a Daily AR Report (using form input)
-router.get("/createDaily", reportsController.createDaily);
+router.post("/createDaily", upload.single("file"), reportsController.createDaily);
 
 //Go to Finance Charge Form
 router.get("/newInterest", reportsController.newInterest)

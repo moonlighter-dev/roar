@@ -21,6 +21,32 @@ module.exports = {
       console.log(err);
     }
   },
+  // JSON
+  getCustomersJSON: async (req, res) => {
+    try {
+      const customers = await Customer
+        .find({ vendor: req.user.id })
+        .sort({ companyName: 1 })
+        .lean();
+
+      res.json(customers);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  getCustomerJSON: async (req, res) => {
+    try {
+      const customer = await Customer
+        .findById(req.params.id)
+        .lean();
+
+      res.json(customer);
+
+    } catch (err) {
+      console.log(err);
+    }
+  },
   // individual customer view - access to payment link and list of open invoices and payments
   getCustomer: async (req, res) => {
     try {

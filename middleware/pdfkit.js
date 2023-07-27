@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit');
 
-exports.dailyReport = (req, res, next) => {
+module.exports = {
+    dailyReport: async (req, res, next) => {
         const doc = new PDFDocument();
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -36,6 +37,7 @@ exports.dailyReport = (req, res, next) => {
         // Finalize the PDF document
         doc.end();
     }
+}
 
 function generateTableWithFooter(doc, headers, data, footer, x, y) {
     const tableProps = {

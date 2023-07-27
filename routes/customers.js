@@ -5,6 +5,10 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Customer Routes
 
+//JSON READ Operations
+router.get("/json/", customersController.getCustomersJSON)
+router.get("/json/:id", customersController.getCustomerJSON)
+
 //Get all Customers
 router.get("/", ensureAuth, customersController.getCustomers)
 
