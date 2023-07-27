@@ -1,5 +1,5 @@
 const path = require("path")
-const chokidar = reqire("../middleware/chokidar")
+const chokidar = require("../middleware/chokidar")
 const POS = require("../models/POS");
 const Customer = require("../models/Customer")
 
