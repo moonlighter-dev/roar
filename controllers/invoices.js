@@ -25,54 +25,6 @@ module.exports = {
       console.log(err);
     }
   },
-  //JSON
-  getInvoiceJSON: async (req, res) => {
-    try {
-      const invoice = await Invoice
-        .findById(req.params.id)
-        .lean()
-      const customer = await Customer
-        .findById(invoice.customer)
-        .lean()
-
-      res.json(invoice, customer);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  invoicesByDateJSON: async (req, res) => {
-    try {
-      const invoices = await Invoice
-        .find({ date: req.params.date })
-        .lean()
-        //TODO loop though invoices and assemble customer data to match
-      const customers = await Customer
-        .findById(invoices.customer)
-        .lean()
-
-      res.json(invoices, customers);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  invoicesByCustomerJSON: async (req, res) => {
-    try {
-      const customer = await Customer
-        .find({ id: req.params.id })
-        .lean()
-      const invoices = await Invoice
-        .find({ customer: customer })
-        .sort({ date: 1 })
-        .lean();
-
-      res.json(customer, invoices);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
   // view invoices relating to a customer id param
   getInvoices: async (req, res) => {
     try {
@@ -111,18 +63,18 @@ module.exports = {
       console.log(err);
     }
   },
-    // sanitizes the input from the watcher
-    autoInvoice: async (req, res) => {
+    //adds an invoice from confirmed pos data
+    automagic: async (req, res) => {
       try {
-        // const customers = await Customer
-        //   .find()
-        //   .lean();
+        const customer = await Customer
+          .find({ name: req.body.customerName })
+          .lean();
+
+          //if the customer is not found, then the app needs to throw an error and urge the user to enter the invoice manually.
+
+        const invoice = await Invoice.create({ customer: customer.id, date: Date.now(), number: req.body.number, total: req.body.total })
   
-        // res.render("invoice/new-invoice.ejs", { 
-        //   customers: customers, 
-        //   user: req.user, 
-        //   page: 'new-invoice', 
-        // });
+        res.json(invoice)
   
       } catch (err) {
         console.log(err);
@@ -136,10 +88,6 @@ module.exports = {
       const customer = await Customer
         .findById(req.body.customer)
         .lean()
-
-      // This will only automate if the customer is already in the database.
-      // TODO when converting to React, feature a component here to add a customer on the fly
-      // because we have to have a cust id on the invoice.
 
       let dueAmt = req.body.total
       let creditLeft = 0
