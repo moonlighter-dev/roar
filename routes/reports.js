@@ -9,9 +9,6 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 //Get Reports Menu
 router.get("/", ensureAuth, reportsController.getReports);
 
-//Create a Daily AR Report (using form input)
-router.post("/createDaily", upload.single("file"), reportsController.createDaily);
-
 //Go to Finance Charge Form
 router.get("/newInterest", reportsController.newInterest)
 
