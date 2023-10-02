@@ -6,14 +6,6 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Invoice Routes
 
-//JSON READ Operations
-router.get("/json/:date", invoicesController.invoicesByDateJSON)
-router.get("/json/:customer", invoicesController.invoicesByCustomerJSON)
-router.get("/json/:id", invoicesController.getInvoiceJSON)
-
-//Get all Invoices - not used at this time
-router.get("/", ensureAuth, invoicesController.getInvoices)
-
 //Get One Invoice
 router.get("/viewInvoice/:id", invoicesController.getInvoice);
 
@@ -21,12 +13,12 @@ router.get("/viewInvoice/:id", invoicesController.getInvoice);
 router.get("/newInvoice", invoicesController.newInvoice);
 
 //Posting invoices through POS
-router.post("/autoInvoice", invoicesController.autoInvoice)
+router.post("/automagic", invoicesController.automagic)
 
 //Create a new Invoice (using form input)
-router.post("/createInvoice", upload.single("file"), invoicesController.createInvoice);
+router.post("/createInvoice", ensureAuth, upload.single("file"), invoicesController.createInvoice);
 
 //Deeelaytay an Invoice
-router.delete("/deleteInvoice/:id", invoicesController.deleteInvoice);
+router.delete("/deleteInvoice/:id", ensureAuth, invoicesController.deleteInvoice);
 
 module.exports = router;

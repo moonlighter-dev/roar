@@ -3,14 +3,14 @@
     <div class="col-8">
       <div class="mt-5">
         <h2>Add an Invoice</h2>
-        <form action="/invoices/createInvoice" enctype="multipart/form-data" method="POST">
+        
           <div class="mb-3">
             <!-- select from customer list -->
               <label for="customer" class="form-label">Customer</label>
               <select name="customer" class="form-control" id="customer" required>
                 <option value="" disabled selected>--Choose customer--</option>
                 <% customers.forEach(customer => { %>
-                  <option value="<%= customer._id %>"><%= customer.companyName %></option>
+                  <option value="<%= customer._id %>" id="customers"><%= customer.companyName %></option>
                 <% }) %>
               </select>
           </div>
@@ -29,11 +29,11 @@
           <div class="mb-3">
             <label for="imgUpload" class="form-label">Scan</label>
             <input type="file" class="form-control" id="imageUpload" name="file" required>
+            <button class="btn" id="automagic">Automagic</button>
           </div>
           <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
         </form>
       </div>
-
     <div class="col-6 mt-5">
       <a class="btn btn-primary" href="/customers">Return to Customers</a>
     </div>
