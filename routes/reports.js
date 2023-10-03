@@ -10,12 +10,12 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 router.get("/", ensureAuth, reportsController.getReports);
 
 //Go to Finance Charge Form
-router.get("/newInterest", reportsController.newInterest)
+router.get("/newInterest", ensureAuth, reportsController.newInterest)
 
 //Create Finance Charges (using form input)
-router.post("/createInterest", reportsController.createInterest);
+router.post("/createInterest", ensureAuth, reportsController.createInterest);
 
 //Create Statements (using form input)
-router.get("/createStatements", reportsController.createStatements);
+router.get("/createStatements", ensureAuth, reportsController.createStatements);
 
 module.exports = router;

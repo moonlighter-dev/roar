@@ -5,21 +5,16 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
 //Payment Routes
 
-//JSON READ Operations
-router.get("/json/:date", paymentsController.paymentsByDateJSON)
-router.get("/json/:customer", paymentsController.paymentsByCustomerJSON)
-router.get("/json/:id", paymentsController.getPaymentJSON)
-
 //Get One Payment
-router.get("/viewPayment/:id", paymentsController.getPayment);
+router.get("/viewPayment/:id", ensureAuth, paymentsController.getPayment);
 
 //Go to New Payment Form
-router.get("/newPayment/:id", paymentsController.newPayment);
+router.get("/newPayment/:id", ensureAuth, paymentsController.newPayment);
 
 //Create a new Payment (using form input)
-router.post("/createPayment", paymentsController.createPayment);
+router.post("/createPayment", ensureAuth, paymentsController.createPayment);
 
 //Deeelaytay a Payment
-router.delete("/deletePayment/:id", paymentsController.deletePayment);
+router.delete("/deletePayment/:id", ensureAuth, paymentsController.deletePayment);
 
 module.exports = router;

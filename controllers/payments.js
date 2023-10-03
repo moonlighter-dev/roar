@@ -20,63 +20,8 @@ module.exports = {
         page: "payment" });
 
     } catch (err) {
-      console.log(err);
-    }
-  },
-  // JSON
-  getPaymentJSON: async (req, res) => {
-    try {
-      const payment = await Payment
-        .findById(req.params.id)
-        .lean()
-      const customer = await Customer
-        .findById(payment.customer)
-        .lean()
-      const invoices = await Invoice
-        .find({ paidBy: payment.id })
-        .lean()
-
-      res.json(payment, customer, invoices);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  paymentsByDateJSON: async (req, res) => {
-    try {
-      const payments = await Payment
-        .findById(req.params.date)
-        .lean()
-        // need to go through payments and add customer and invoice info
-      const customer = await Customer
-        .findById(payments.customer)
-        .lean()
-      const invoices = await Invoice
-        .find({ paidBy: payments.id })
-        .lean()
-
-      res.json(payments, customer, invoices);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  paymentsByCustomerJSON: async (req, res) => {
-    try {
-      const payments = await Payment
-        .findById(req.params.customer)
-        .lean()
-      const customer = await Customer
-        .findById(req.params.customer)
-        .lean()
-      const invoices = await Invoice
-        .find({ paidBy: payments.id })
-        .lean()
-
-      res.json(payments, customer, invoices);
-
-    } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading payment")
     }
   },
   //Go to new payment input
@@ -86,11 +31,12 @@ module.exports = {
       const customer = await Customer
         .findById(req.params.id)
         .lean();
-      const invoices = await Invoice
-        .find({ customer: customer._id, isPaid: false })
+      const allInvoices = await Invoice
+        .findById(customer._id)
         .sort({ date: 1 })
+      const invoices = allInvoices.filter(invoice => !invoice.isPaid)
       
-        // console.log(invoices)
+        console.log(invoices)
 
       res.render("payment/new-payment.ejs", { 
         customer: customer, 
@@ -99,127 +45,95 @@ module.exports = {
         page: "new-payment"
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading customer payment screen")
     }
   },
   createPayment: async (req, res) => {
-    console.log(req.body)
-    
-    const credit = req.body.amount - req.body.appliedPayment
+    // console.log(req.body)
 
     try {
+      const { number, date, customer, amount, tender, appliedPayment, invoices, payIndex, payments } = req.body;
+
+      // Calculate credit
+      const credit = amount - appliedPayment;
+
       const payment = await Payment
         .create({
-          number: req.body.number,
-          date: req.body.date,
-          customer: req.body.customer,
-          amount: req.body.amount,
-          tender: req.body.tender,
+          number, 
+          date, 
+          customer, 
+          amount, 
+          tender
         });
 
       console.log("Payment has been added!");
 
+      // Update customer credit if necessary
       if (credit > 0.00) {
-        await Customer
-          .findOneAndUpdate(
-            { _id: payment.customer },
-            {
-              $set: { credit: credit }
-            }
-          )
-        console.log("Remaining credit applied successfully!")
+        await Customer.findByIdAndUpdate(customer, { $set: { credit } });
+        console.log("Remaining credit applied successfully!");
       }
       
-      const customer = await Customer
-        .findOneAndUpdate(
-          { _id: payment.customer },
-          {
-            $inc: { balance: -payment.amount }
-          }
-        )        
+      // Update customer balance
+      const customerUpdate = await Customer.findByIdAndUpdate(customer, { $inc: { balance: -amount } });
+      
+      console.log("Customer balance successfully updated!");     
 
-      console.log("Customer balance successfully updated!")
+      // Process paid invoices
+    const updatePromises = invoices.map(async (invoiceId, index) => {
+      const payAmt = payments[index];
+      const invoice = await Invoice.findById(invoiceId);
 
-      const paidInvoices = req.body.invoices
-      const allInvoices = req.body.payIndex
+      console.log(payAmt);
 
-      if (typeof(paidInvoices) === "string") {
-        const invoice = await Invoice.findById(paidInvoices)
-        updateInvoice(invoice, req.body.appliedPayment)
+      const update = {};
+
+      if (payAmt === invoice.due) {
+        update.$set = { isPaid: true, due: 0.00, paidBy: payment._id };
       } else {
-
-      await paidInvoices.forEach((invoice) => {
-        const index = allInvoices.indexOf(invoice)
-        const payAmt = req.body.payments[index]
-
-        console.log(payAmt)
-
-        updateInvoice(invoice, payAmt)
-
-      });
+        update.$inc = { due: -payAmt };
+        update.$set = { paidBy: payment._id };
       }
 
-      async function updateInvoice(invoice, payAmt) {
-        // if the payAmount is less than the invoice amount
-        // is there an overDue amount? subtract the payAmount and update it
-        let currentInvoice = await Invoice.findById(invoice)
-        let dueAmt = currentInvoice.due
-        let update = {}
+      await Invoice.findByIdAndUpdate(invoiceId, update);
+    });
 
-        if (payAmt == dueAmt) {
-          update = {
-              $set: {
-                isPaid: true, 
-                due: 0.00,
-                paidBy: payment.id,
-              }
-            }
-        } else {
-          update = {
-            $inc: { 
-              due: -payAmt,
-            },
-            $set: {
-              paidBy: payment.id,
-            }
-          }
-        }
-
-        await Invoice.findOneAndUpdate(
-          { _id: invoice },
-          update
-        )
-      }
+    await Promise.all(updatePromises);
       
       res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error creating payment")
     }
   },
   deletePayment: async (req, res) => {
     try {
+      const paymentId = req.params.id
+      
       // Find payment by id
-      const payment = await Payment.findById(req.params.id);
-      const invoices = await Invoice.find({ paidBy: req.params.id })
+      const payment = await Payment.findById(paymentId);
+      const invoices = await Invoice.find({ paidBy: paymentId })
 
       console.log(payment)
 
-      invoices.forEach(async invoice => {
-        await Invoice.findOneAndUpdate(
-          { _id: invoice.id },
-          {
-            $set: { 
-              isPaid: false, 
-              paidBy: null,
-              due: invoice.total,
-            },
-          }
-        ).exec()
-      });
-      console.log('All invoices updated!')
+      // Create an array of promises to update invoices
+    const updatePromises = invoices.map(async (invoice) => {
+      await Invoice.findByIdAndUpdate(invoice.id, {
+        $set: {
+          isPaid: false,
+          paidBy: null,
+          due: invoice.total,
+        },
+      }).exec();
+    });
 
-      await Customer.findOneAndUpdate(
-        { _id: payment.customer },
+    // Use Promise.all to execute all updatePromises concurrently
+    await Promise.all(updatePromises);
+    console.log('All invoices updated!');
+
+      await Customer.findByIdAndUpdate(
+        payment.customer,
         {
           $inc: { balance: payment.amount }
         }
@@ -232,8 +146,8 @@ module.exports = {
 
       res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
-      console.log(err)
-      res.redirect(`/customers`);
+      console.error(err)
+      res.status(500).send("Error deleting payment");
     }
   },
 };

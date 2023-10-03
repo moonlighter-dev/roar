@@ -10,6 +10,7 @@ module.exports = {
       const invoice = await Invoice
         .findById(req.params.id)
         .lean()
+      
       const customer = await Customer
         .findById(invoice.customer)
         .lean()
@@ -25,11 +26,11 @@ module.exports = {
       console.log(err);
     }
   },
-  // view invoices relating to a customer id param
+  // view open invoices relating to a customer id param
   getInvoices: async (req, res) => {
     try {
       const customer = await Customer
-        .find({ id: req.params.id })
+        .findById(req.params.id)
         .lean()
       const invoices = await Invoice
         .find({ customer: customer })
@@ -43,14 +44,15 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading invoices")
     }
   },
   // renders page with form to create a new invoice, passing in customers to populate the select field
   newInvoice: async (req, res) => {
     try {
       const customers = await Customer
-        .find()
+        .find({ vendor: req.user.id })
         .lean();
 
       res.render("invoice/new-invoice.ejs", { 
@@ -60,26 +62,10 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading page")
     }
   },
-    //adds an invoice from confirmed pos data
-    automagic: async (req, res) => {
-      try {
-        const customer = await Customer
-          .find({ name: req.body.customerName })
-          .lean();
-
-          //if the customer is not found, then the app needs to throw an error and urge the user to enter the invoice manually.
-
-        const invoice = await Invoice.create({ customer: customer.id, date: Date.now(), number: req.body.number, total: req.body.total })
-  
-        res.json(invoice)
-  
-      } catch (err) {
-        console.log(err);
-      }
-    },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
     // console.log(req.body)
@@ -109,14 +95,13 @@ module.exports = {
           creditLeft = customer.credit - dueAmt
         } else {
           dueAmt -= customer.credit
-          creditLeft = 0.00
         }
       }
 
       // we also want to update the customer balance
 
-      await Customer.findOneAndUpdate(
-        { _id: customer.id },
+      await Customer.findByIdAndUpdate(
+        customer.id,
         {
           $inc: { balance: req.body.total }
         },
@@ -146,15 +131,22 @@ module.exports = {
 
       res.redirect(`/customers/viewCustomer/${invoice.customer}`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error creating invoice")
     }
   },
   deleteInvoice: async (req, res) => {
     try {
+      const invoiceId = req.params.id
       // Find invoice by id
       const invoice = await Invoice
-        .findById(req.params.id)
+        .findById(invoiceId)
         .lean()
+
+          // Ensure the invoice exists
+      if (!invoice) {
+        return res.status(404).json({ error: 'Invoice not found' });
+      }
       const customer = await Customer
         .findById(invoice.customer)
         .lean()
@@ -164,31 +156,28 @@ module.exports = {
 
       // Delete post from db
       await Invoice
-        .remove({ _id: req.params.id });
+        .deleteOne({ _id: invoiceId });
 
       console.log("Deleted Invoice");
 
-      let credit = 0.00
+      // Calculate the credit adjustment
+      const credit = Math.max(0, invoice.total - customer.balance);
 
-      if (customer.balance < invoice.total) {
-        credit = invoice.total - customer.balance
-      }
-      
-      await Customer.findOneAndUpdate(
-        { _id: invoice.customer },
+      // Update the customer's balance and credit
+      await Customer.findByIdAndUpdate(
+        customer._id,
         {
-          $inc: { balance: -invoice.total }
-        },
-        {
-          $set: { credit: credit }
+          $inc: { balance: -invoice.total },
+          $set: { credit },
         }
-      )
-      console.log("Customer balance successfully updated!")
+      );
+        console.log("Customer balance successfully updated!")
 
       res.redirect(`/customers/viewCustomer/${invoice.customer}`);
 
     } catch (err) {
-      res.redirect(`/customers`);
+      console.error(err);
+      res.status(500).send("Error deleting invoice");
     }
   },
 };

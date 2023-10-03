@@ -18,33 +18,8 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
-    }
-  },
-  // JSON
-  getCustomersJSON: async (req, res) => {
-    try {
-      const customers = await Customer
-        .find({ vendor: req.user.id })
-        .sort({ companyName: 1 })
-        .lean();
-
-      res.json(customers);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  getCustomerJSON: async (req, res) => {
-    try {
-      const customer = await Customer
-        .findById(req.params.id)
-        .lean();
-
-      res.json(customer);
-
-    } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading customers")
     }
   },
   // individual customer view - access to payment link and list of open invoices and payments
@@ -59,8 +34,6 @@ module.exports = {
       const payments = await Payment
         .find({ customer: customer._id })
         .lean()
-      
-        // console.log(invoices)
 
       res.render("customer/customer.ejs", { 
         customer: customer, 
@@ -71,7 +44,8 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error retrieving customer")
     }
   },
   // generate new customer form page
@@ -107,7 +81,8 @@ module.exports = {
       res.redirect("/customers");
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error adding customer")
     }
   },
   // generate customer edit form and populate with current data
@@ -124,7 +99,8 @@ module.exports = {
        });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading customer")
     }
   },
   // update customer info using form
@@ -149,7 +125,8 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${req.params.id}`);
 
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      res.status(500).send("Error updating customer")
     }
   },
   // deeelaytay a customer
@@ -160,8 +137,8 @@ module.exports = {
       console.log("Deleted Customer");
       res.redirect("/customers");
     } catch (err) {
-      console.log(err)
-      res.redirect(`/customer/${req.params.id}`);
+      console.error(err)
+      res.status(500).send("Error deleting customer")
     }
   },
 };

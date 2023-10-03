@@ -7,6 +7,9 @@ const total = document.getElementById('total');
 const number = document.getElementById('number');
 const automagic = document.getElementById('automagic');
 
+// Set date input field to today's date by default
+document.getElementById('date').valueAsDate = new Date();
+
 
 // Store the extracted data
 let extractedData = {
@@ -69,8 +72,6 @@ document.getElementById('confirmButton').addEventListener('click', () => {
         const currentCustomer = customers.filter(customer => customer.innerText.toLowerCase() == extractedData.customerName.toLowerCase())
 
         customer.innerHTML = `value=${currentCustomer.value}`
-
-        date.value = Date.now()
 
         total.value = extractedData.total
 

@@ -3,7 +3,12 @@
     <div class="col-8">
       <div class="mt-5">
         <h2>Add an Invoice</h2>
-        
+          <form action="/invoices/createInvoice" method="POST">
+            <div class="mb-3">
+              <label for="imgUpload" class="form-label">Scan</label>
+              <input type="file" class="form-control" id="imageUpload" name="file" required>
+              <button class="btn" id="automagic">Automagic</button>
+            </div>
           <div class="mb-3">
             <!-- select from customer list -->
               <label for="customer" class="form-label">Customer</label>
@@ -25,11 +30,6 @@
           <div class="mb-3">
             <label for="number" class="form-label">Invoice Number</label>
             <input type="number" class="form-control" id="number" step="1" name="number" required>
-          </div>
-          <div class="mb-3">
-            <label for="imgUpload" class="form-label">Scan</label>
-            <input type="file" class="form-control" id="imageUpload" name="file" required>
-            <button class="btn" id="automagic">Automagic</button>
           </div>
           <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
         </form>
