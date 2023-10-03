@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const session = require("express-session");
+const oneDay = 1000 * 60 * 60 * 24;
 const passport = require("passport");
 const methodOverride = require("method-override");
 const flash = require("express-flash");
@@ -28,6 +29,7 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: oneDay },
     store: sessionStore,
   })
 );

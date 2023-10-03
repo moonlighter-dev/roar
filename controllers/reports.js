@@ -12,7 +12,8 @@ module.exports = {
         page: "reports" 
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error loading reports page")
     }
   },
   createDaily: async (req, res) => {

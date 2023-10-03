@@ -68,7 +68,7 @@ module.exports = {
   },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
-    // console.log(req.body)
+    console.log(req.body)
     try {
 
       const customer = await Customer
