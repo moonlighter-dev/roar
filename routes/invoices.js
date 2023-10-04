@@ -15,6 +15,12 @@ router.get("/newInvoice", ensureAuth, invoicesController.newInvoice);
 //Create a new Invoice (using form input)
 router.post("/createInvoice", ensureAuth, upload.single("file"), invoicesController.createInvoice);
 
+//Review and edit Finance Charges before posting
+router.get("/FinanceCharges", ensureAuth, invoicesController.financeCharges);
+
+//Create multiple Invoices (finance charges)
+router.post("/createFinanceCharges", ensureAuth, invoicesController.createFinanceCharges);
+
 //Deeelaytay an Invoice
 router.delete("/deleteInvoice/:id", ensureAuth, invoicesController.deleteInvoice);
 

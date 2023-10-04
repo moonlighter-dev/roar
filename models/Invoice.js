@@ -37,10 +37,6 @@ const InvoiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  overDue: {
-    type: Number,
-    default: 0.00,
-  },
   paidBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",

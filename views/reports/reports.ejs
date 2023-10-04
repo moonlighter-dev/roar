@@ -27,23 +27,27 @@
             <label for="imgUpload" class="form-label">Global X</label>
             <input type="file" class="form-control" id="imageUpload" name="file" required>
           </div>
-          <button type="submit" class="btn btn-primary">Create Report</button>
+          <button type="submit" class="btn btn-primary">Review Report</button>
         </form>
     </div>
     </section>
     <section>
-      <div class="row justify-content-center mt-5">
-        <a href="/reports/newInterest/" class="btn btn-primary">
-          Finance Charges
-        </a>
-      </div>      
+      <h3>Finance Charges</h3>
+      <form action="/invoices/financeCharges/">
+        <div class="mb-3">
+          <label for="chargeDate" class="form-label">Charge Date</label>
+          <input type="chargeDate" class="form-control" id="chargeDate" name="chargeDate" required>
+          <!-- Make sure this is the last day of the previous month, so the charge will show up on the statement. Only one batch of finance charges should be allowed per month -->
+        </div>
+        <button type="submit" class="btn btn-primary">Review Charges</button>
+      </form>     
     </section>
     <section>
-      <div class="row justify-content-center mt-5">
+      <!-- <div class="row justify-content-center mt-5">
         <a href="/reports/newMonthly/" class="btn btn-primary">
-          Statements
+          Review Statements
         </a>
-      </div>      
+      </div>       -->
     </section>
   </div>  
 </main>

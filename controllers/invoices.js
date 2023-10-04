@@ -69,11 +69,7 @@ module.exports = {
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
     // console.log(req.body)
-    const convertValueToSixDigitString = (value) => {
-      const number = value.toString();
-      const leadingZeros = number.padStart(6 - number.length, '0');
-      return leadingZeros;
-    };
+
     try {
       const { customer, total, openingBalance, date } = req.body
 
@@ -94,11 +90,11 @@ module.exports = {
         const currentCounter = await counterDocumentPromise.then(doc => doc.value)
         
         // set the invoice number to the current counter, formatted with the opening balance prefix
-        invoiceNumber = `BAL_${Invoice.convertValueToSixDigitString(currentCounter)}`
+        invoiceNumber = `BAL_${convertValueToSixDigitString(currentCounter)}`
 
       } else {
         // set the invoice number to the number that was entered with the default invoice prefix 
-        invoiceNumber = `INV_${Invoice.convertValueToSixDigitString(req.body.number)}`
+        invoiceNumber = `INV_${convertValueToSixDigitString(req.body.number)}`
       }
 
       // if customer has a credit we want to apply that first
@@ -143,7 +139,6 @@ module.exports = {
         due: dueAmt,
         isPaid: isPaid,
         paidBy: paidBy,
-        financeCharge: false,
       });
 
       await Promise.all([
@@ -158,6 +153,121 @@ module.exports = {
       console.log("Invoice has been added!");
 
       res.redirect(`/customers/viewCustomer/${customer}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error creating invoice")
+    }
+  },
+    // renders page with form to create a new invoice, passing in customers to populate the select field
+    financeCharges: async (req, res) => {
+      //Convert date string from form input into a date object
+      const chargeDateStr = req.body.date
+      const chargeDate = new Date(chargeDateStr)
+
+      const isOverdue = (currentDate, invoiceDate) => {
+        const timeDifferenceMs = currentDate - invoiceDate;
+        const daysDifference = timeDifferenceMs / (1000 * 3600 * 24)
+        return daysDifference > 30
+      }
+      
+
+      try {
+        const customers = await Customer
+          .find()
+          .lean();
+        
+        const openInvoices = await Invoice
+          .find({ isPaid: false, })
+          .lean();
+ 
+        const overdueInvoices = openInvoices.filter(invoice => isOverdue(chargeDate, invoice.date))
+
+        const invoiceCustomers = overdueInvoices.map(invoice => invoice.customer)
+
+        const overdueCustomers = new Set(invoiceCustomers).keys()
+
+        const overduedata = {}
+        
+        overdueCustomers.forEach(overdueCustomer => {
+          const fullCustomer = customers.find(cust => cust.id === overdueCustomer.id)
+
+          const overdueBalance = overdueInvoices.filter(invoice => invoice.customer === overdueCustomer.id).reduce(acc, inv => acc += inv.total, 0)
+
+          let financeCharge = overdueBalance * 0.15
+
+          if (financeCharge < 1) {
+            financeCharge = 0
+          }
+          
+          overduedata.push(
+            { customer: fullCustomer, overdue: overdueBalance, financeCharge: financeCharge })
+      })
+
+        res.render("invoice/finance-charges.ejs", {
+          date: chargeDate, 
+          customers: customers,
+          overduedata: overduedata,
+          user: req.user, 
+          page: 'finance-charges', 
+        });
+  
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading page")
+      }
+    },
+  // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
+  createFinanceCharges: async (req, res) => {
+    // console.log(req.body)
+    
+    try {
+      // req.body: req.body.date (date), req.body.total (array), and req.body.customer (array)
+      const { customers, totals, date } = req.body
+
+      customers.forEach(async (customer, index) => {
+
+      let dueAmt = totals[index]
+      let isPaid = false
+      let paidBy = null
+      
+      const counterDocumentPromise = await Counter.findOne({ name: "financeChargeCounter" });
+      const currentCounter = await counterDocumentPromise.then(doc => doc.value)
+      chargeNumber = `BAL_${convertValueToSixDigitString(currentCounter)}`
+
+      // Update the customer balance
+
+      const customerUpdatePromise = await Customer.findByIdAndUpdate(
+        customer,
+        {
+          $inc: { balance: total },
+        }
+      )
+      console.log("Customer balance successfully updated!")
+
+      const chargePromise = await Invoice.create({
+        number: chargeNumber,
+        date: date,
+        customer: customer,
+        total: total,
+        due: dueAmt,
+        isPaid: isPaid,
+        paidBy: paidBy,
+      });
+
+      await Promise.all([
+        customerUpdatePromise,
+        chargePromise,
+        counterDocumentPromise.then(doc => {
+          doc.value += 1;
+          return doc.save();
+        }),
+      ]);
+
+      console.log("Charge has been added!");
+    })
+      console.log("All charges have been added!")
+
+      res.redirect('/reports/');
     } catch (err) {
       console.error(err);
       res.status(500).send("Error creating invoice")
@@ -180,8 +290,9 @@ module.exports = {
         .lean()
 
       // Delete image from cloudinary
-      await cloudinary.uploader.destroy(invoice.cloudinaryId);
-
+      if (invoice.file) {
+        await cloudinary.uploader.destroy(invoice.cloudinaryId);
+      }
       // Delete post from db
       await Invoice
         .deleteOne({ _id: invoiceId });
@@ -208,4 +319,10 @@ module.exports = {
       res.status(500).send("Error deleting invoice");
     }
   },
+};
+
+const convertValueToSixDigitString = (value) => {
+  const number = value.toString();
+  const leadingZeros = number.padStart(6 - number.length, '0');
+  return leadingZeros;
 };
