@@ -68,45 +68,64 @@ module.exports = {
   },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
   createInvoice: async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
+    const convertValueToSixDigitString = (value) => {
+      const number = value.toString();
+      const leadingZeros = number.padStart(6 - number.length, '0');
+      return leadingZeros;
+    };
     try {
+      const { customer, total, openingBalance, date } = req.body
 
-      const customer = await Customer
-        .findById(req.body.customer)
+      const customerPromise = await Customer
+        .findById(customer)
         .lean()
 
-      let dueAmt = req.body.total
+      let dueAmt = total
       let creditLeft = 0
       let isPaid = false
       let paidBy = null
+      let invoiceNumber
+
+      // if the opening balance option was checked, we want to assign the invoice number according to the counter
+      if (openingBalance){
+        // lookup the value of the counter
+        const counterDocumentPromise = await Counter.findOne({ name: "invoiceCounter" });
+        const currentCounter = await counterDocumentPromise.then(doc => doc.value)
+        
+        // set the invoice number to the current counter, formatted with the opening balance prefix
+        invoiceNumber = `BAL_${Invoice.convertValueToSixDigitString(currentCounter)}`
+
+      } else {
+        // set the invoice number to the number that was entered with the default invoice prefix 
+        invoiceNumber = `INV_${Invoice.convertValueToSixDigitString(req.body.number)}`
+      }
 
       // if customer has a credit we want to apply that first
 
-      if (customer.credit > 0) {
-        const lastPayment = await Payment.findOne({ customer: customer._id })
+      if (customerPromise.credit > 0) {
+        const lastPaymentPromise = await Payment.findOne({ customer: customer._id })
 
         console.log(lastPayment)
 
-        paidBy = lastPayment.id
+        paidBy = lastPaymentPromise ? lastPayment.id : null;
         
-        if (dueAmt <= customer.credit) {
+        if (dueAmt <= customerPromise.credit) {
           dueAmt = 0.00
           isPaid = true
-          creditLeft = customer.credit - dueAmt
+          creditLeft = customerPromise.credit - dueAmt
         } else {
-          dueAmt -= customer.credit
+          dueAmt -= customerPromise.credit
         }
       }
 
       // we also want to update the customer balance
 
-      await Customer.findByIdAndUpdate(
-        customer.id,
+      const customerUpdatePromise = await Customer.findByIdAndUpdate(
+        customer,
         {
-          $inc: { balance: req.body.total }
-        },
-        {
-          $set: { credit: creditLeft }
+          $inc: { balance: total },
+          $set: { credit: creditLeft },
         }
       )
       console.log("Customer balance successfully updated!")
@@ -114,11 +133,11 @@ module.exports = {
       // Upload image to cloudinary
       const result = await cloudinary.uploader.upload(req.file.path);
 
-      const invoice = await Invoice.create({
-        number: req.body.number,
-        date: req.body.date,
-        customer: req.body.customer,
-        total: req.body.total,
+      const invoicePromise = await Invoice.create({
+        number: invoiceNumber,
+        date: date,
+        customer: customer,
+        total: total,
         image: result.secure_url,
         cloudinaryId: result.public_id,
         due: dueAmt,
@@ -127,9 +146,18 @@ module.exports = {
         financeCharge: false,
       });
 
+      await Promise.all([
+        customerUpdatePromise,
+        invoicePromise,
+        openingBalance ? counterDocumentPromise.then(doc => {
+          doc.value += 1;
+          return doc.save();
+        }) : Promise.resolve(),
+      ]);
+
       console.log("Invoice has been added!");
 
-      res.redirect(`/customers/viewCustomer/${invoice.customer}`);
+      res.redirect(`/customers/viewCustomer/${customer}`);
     } catch (err) {
       console.error(err);
       res.status(500).send("Error creating invoice")

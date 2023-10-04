@@ -53,14 +53,14 @@ module.exports = {
     // console.log(req.body)
 
     try {
-      const { number, date, customer, amount, tender, appliedPayment, invoices, payIndex, payments } = req.body;
+      const { number, date, customer, amount, tender, appliedPayment, invoices, payments } = req.body;
 
       // Calculate credit
       const credit = amount - appliedPayment;
 
       const payment = await Payment
         .create({
-          number, 
+          number: `REF_${number}`, 
           date, 
           customer, 
           amount, 

@@ -6,9 +6,27 @@ const date = document.getElementById('date');
 const total = document.getElementById('total');
 const number = document.getElementById('number');
 const automagic = document.getElementById('automagic');
+const openingBalance = document.getElementById('openingBalance');
+
+// Set behavior for checking the "Opening Balance" checkbox
+openingBalance.addEventListener('change', function () {
+    if (openingBalanceCheckbox.checked) {
+      // If the checkbox is checked, disable the input and remove the "required" attribute
+      number.disabled = true;
+      number.removeAttribute('required');
+      fileInput.disabled = true;
+      fileInput.removeAttribute('required');
+    } else {
+      // If the checkbox is unchecked, enable the input and add the "required" attribute
+      number.disabled = false;
+      number.setAttribute('required', 'required');
+      fileInput.disabled = false;
+      fileInput.setAttribute('required', 'required');
+    }
+  });
 
 // Set date input field to today's date by default
-document.getElementById('date').valueAsDate = new Date();
+date.valueAsDate = new Date();
 
 
 // Store the extracted data
