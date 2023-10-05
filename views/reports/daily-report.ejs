@@ -4,14 +4,13 @@
       <div class="mt-5">
         <h2><%= user.companyName %> Daily Sales Summary</h2>
         <h3><%= date.toLocaleDateString() %></h3>
-        <table>
-            
-        </table>
-        <!-- AR Report -->
-        <!-- amount -->
-        <!-- ROA -->
-        <!-- by payment type -->
         <form action="/reports/createDaily">
+          <table>
+            <!-- AR Report -->
+            <!-- amount -->
+            <!-- ROA -->
+            <!-- by payment type -->
+          </table>
             <!-- Actual Drawer -->
                 <!-- inputs: -->
                 <!-- Check -->
@@ -52,7 +51,7 @@
       </div>
 
     <div class="col-6 mt-5">
-      <a class="btn btn-primary" href="/customers">Return to Customers</a>
+      <a class="btn btn-primary" href="/reports">Return to Reports</a>
     </div>
   </div>
 </div>

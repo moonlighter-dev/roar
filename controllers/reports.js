@@ -7,6 +7,8 @@ const pdfkit = require("../middleware/pdfkit")
 module.exports = {
   getReports: async (req, res) => {
     try {
+      // let's pass in helpful variables so that we can make easier choices
+      // how about adding a date of last finance charge so we can prevent doubling up, a recommendation to use the last day of the previous month for finance charge and statements inputs, and an automatic recommendation to use the previous day for the daily report.
       res.render("reports/reports.ejs", { 
         user: req.user, 
         page: "reports" 
@@ -17,7 +19,10 @@ module.exports = {
     }
   },
   createDaily: async (req, res) => {
-    console.log('Report Data:', req.reportData);
+    //req.body: req.body.date, req.body.checks, req.body.cc, req.body.redeemGC
+
+    //instead of uploading the image we want to enable client side js to read the file and return the text. Then we will extract the data from the text and combine it with the req.body to create the report.
+
 
     try {
 
@@ -65,8 +70,8 @@ module.exports = {
       console.log(err);
     }
   },
-  createInterest: async (req, res) => {
-    // incoming: 
+  reviewStatements: async (req, res) => {
+    // ACHTUNG! THIS HASN'T BEEN EDITED! 
     try {
       const payment = await Payment.create({
         number: req.body.number,
