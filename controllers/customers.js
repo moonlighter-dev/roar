@@ -19,7 +19,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading customers")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading customers",
+        page: "error"
+      })
     }
   },
   // individual customer view - access to payment link and list of open invoices and payments
@@ -45,7 +49,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error retrieving customer")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error retrieving customer",
+        page: "error"
+      })
     }
   },
   // generate new customer form page
@@ -82,7 +90,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error adding customer")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error adding customer",
+        page: "error"
+      })
     }
   },
   // generate customer edit form and populate with current data
@@ -100,7 +112,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading customer")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading customer",
+        page: "error"
+      })
     }
   },
   // update customer info using form
@@ -126,7 +142,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err)
-      res.status(500).send("Error updating customer")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error updaging customer",
+        page: "error"
+      })
     }
   },
   // deeelaytay a customer
@@ -138,7 +158,11 @@ module.exports = {
       res.redirect("/customers");
     } catch (err) {
       console.error(err)
-      res.status(500).send("Error deleting customer")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error deleting customer",
+        page: "error"
+      })
     }
   },
 };

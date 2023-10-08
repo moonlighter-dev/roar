@@ -21,7 +21,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading payment")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading payment",
+        page: "error"
+      })
     }
   },
   //Go to new payment input
@@ -46,7 +50,11 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading customer payment screen")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading payment page",
+        page: "error"
+      })
     }
   },
   createPayment: async (req, res) => {
@@ -104,7 +112,11 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error creating payment")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error creating payment",
+        page: "error"
+      })
     }
   },
   deletePayment: async (req, res) => {
@@ -147,7 +159,11 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${payment.customer}`);
     } catch (err) {
       console.error(err)
-      res.status(500).send("Error deleting payment");
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error deleting payment",
+        page: "error"
+      })
     }
   },
 };

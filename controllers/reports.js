@@ -25,7 +25,11 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading reports page")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading reports page",
+        page: "error"
+      })
     }
   },
   createDaily: async (req, res) => {
@@ -63,24 +67,6 @@ module.exports = {
       console.log(err);
     }
   },
-  newInterest: async (req, res) => {
-    try {
-      const customers = await Customer
-        .find()
-        .lean();
-      const invoices = await Invoice
-        .find()
-        .lean()
-      res.render("interest/newInterest", { 
-        customers: customers,
-        invoices: invoices,
-        user: req.user,
-        page: "newInterest", 
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  },
   //Renders a page with end of month customer information, stats such as number of statements, and a print button
   reviewStatements: async (req, res) => {
     
@@ -102,10 +88,12 @@ module.exports = {
     }
     catch (err) {
       console.error(err);
-      res.status(500).send('Error creating page')
-    }
-
-      
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error creating page",
+        page: "error"
+      })
+    } 
   },
   //Assembles and prints statement data in pdf form
   createStatements: async (req, res) => {
@@ -145,7 +133,11 @@ module.exports = {
       res.redirect("/reports")
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error printing statements")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error creating statements",
+        page: "error"
+      })
     }
   }
 }

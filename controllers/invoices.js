@@ -24,7 +24,12 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading invoice",
+        page: "error"
+      })
     }
   },
   // view open invoices relating to a customer id param
@@ -46,7 +51,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading invoices")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error loading invoices",
+        page: "error"
+      })
     }
   },
   // renders page with form to create a new invoice, passing in customers to populate the select field
@@ -64,7 +73,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error loading page")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error retrieving customers for page",
+        page: "error"
+      })
     }
   },
   // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
@@ -220,7 +233,11 @@ module.exports = {
   
       } catch (err) {
         console.error(err);
-        res.status(500).send("Error loading page")
+        res.status(500).render("/error/500.ejs", {
+          user: req.user,
+          error: "Error loading page",
+          page: "error"
+        })
       }
     },
   // loops through the overdue customers and applies the finance charges
@@ -277,7 +294,11 @@ module.exports = {
       res.redirect('/reports/');
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error creating invoice")
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error creating charges",
+        page: "error"
+      })
     }
   },
   deleteInvoice: async (req, res) => {
@@ -323,7 +344,11 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error deleting invoice");
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error deleting invoice",
+        page: "error"
+      })
     }
   },
 };
