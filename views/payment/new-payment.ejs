@@ -3,6 +3,7 @@
     <div class="col-8">
       <div class="mt-5">
         <h2>Make a Payment</h2>
+        <div class="divider"></div>
         <form action="/payments/createPayment" method="POST">
           <div class="mb-3">
             <!-- passes in the selected customer -->
@@ -10,7 +11,7 @@
               <h3>Total Balance $ <%= customer.balance.toFixed(2) %></h3>
               <input type="hidden" class="form-control" id="customer" name="customer" value="<%= customer._id %>">
           </div>
-      
+          
           <div class="mb-3">
             <label for="date" class="form-label">Date</label>
             <input type="date" class="form-control" id="date" name="date" required>
@@ -33,6 +34,7 @@
                   <% }) %>
               </select>
           </div>
+          <div class="divider"></div>
               <!-- Invoices!!!  -->
     <div class="row justify-content-center mt-5">
       <h4>Open Invoices</h4>

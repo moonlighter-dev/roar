@@ -3,6 +3,7 @@
     <div class="col-12">
       <div class="mt-5">
         <h2>Edit <%= customer.companyName %></h2>
+        <div class="divider"></div>
         <form action="/customers/updateCustomer/<%= customer._id %>?_method=PUT"
         method="POST">
           <div class="mb-3">
@@ -44,7 +45,7 @@
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
-
+      <div class="divider"></div>
     <div class="col-6 mt-5">
       <form action="/customers/deleteCustomer/<%= customer._id %>?_method=DELETE" method="POST" class="col-3">
       <button class="btn btn-danger fa fa-trash" type="submit">Delete this Customer</button>

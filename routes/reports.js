@@ -9,12 +9,12 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 router.get("/", ensureAuth, reportsController.getReports);
 
 //Create Daily Report
-router.get("/dailyreport", ensureAuth, reportsController.createDaily)
+router.post("/dailyreport", ensureAuth, reportsController.createDaily)
 
 //Review Statements
-router.get("/reviewStatements", ensureAuth, reportsController.reviewStatements);
+router.post("/reviewStatements", ensureAuth, reportsController.reviewStatements);
 
 //Create Statements (using form input)
-router.get("/createStatements", ensureAuth, reportsController.createStatements);
+router.post("/createStatements", ensureAuth, reportsController.createStatements);
 
 module.exports = router;

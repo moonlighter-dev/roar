@@ -16,7 +16,7 @@ router.get("/newInvoice", ensureAuth, invoicesController.newInvoice);
 router.post("/createInvoice", ensureAuth, upload.single("file"), invoicesController.createInvoice);
 
 //Review and edit Finance Charges before posting
-router.get("/FinanceCharges", ensureAuth, invoicesController.financeCharges);
+router.post("/FinanceCharges", ensureAuth, invoicesController.financeCharges);
 
 //Create multiple Invoices (finance charges)
 router.post("/createFinanceCharges", ensureAuth, invoicesController.createFinanceCharges);

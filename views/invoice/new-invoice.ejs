@@ -8,6 +8,7 @@
             <input type="file" class="form-control" id="imageUpload" form="invoiceForm" name="file" required>
             <button class="btn" id="automagic">Automagic</button><span>optional</span>
           </div>
+          <div class="divider"></div>
           <form action="/invoices/createInvoice" id="invoiceForm" enctype="multipart/form-data" method="POST">
           <div class="mb-3">
             <!-- select from customer list -->
@@ -39,8 +40,5 @@
           <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
         </form>
       </div>
-    <div class="col-6 mt-5">
-      <a class="btn btn-primary" href="/customers">Return to Customers</a>
-    </div>
   </div>
 </div>

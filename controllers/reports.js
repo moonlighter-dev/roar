@@ -8,9 +8,19 @@ module.exports = {
   getReports: async (req, res) => {
     try {
       // let's pass in helpful variables so that we can make easier choices
-      // how about adding a date of last finance charge so we can prevent doubling up, a recommendation to use the last day of the previous month for finance charge and statements inputs, and an automatic recommendation to use the previous day for the daily report.
+      // how about adding a date of last finance charge so we can prevent doubling up
+
+      //Important Dates for Preparing Reports
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      const lastMonthEndDate = new Date(today.getFullYear(), today.getMonth(), 0);
+      
       res.render("reports/reports.ejs", { 
         user: req.user, 
+        yesterday: yesterday,
+        lastMonthEndDate: lastMonthEndDate,
         page: "reports" 
       });
     } catch (err) {
@@ -64,66 +74,78 @@ module.exports = {
       res.render("interest/newInterest", { 
         customers: customers,
         invoices: invoices,
+        user: req.user,
         page: "newInterest", 
       });
     } catch (err) {
       console.log(err);
     }
   },
+  //Renders a page with end of month customer information, stats such as number of statements, and a print button
   reviewStatements: async (req, res) => {
-    // ACHTUNG! THIS HASN'T BEEN EDITED! 
+    
     try {
-      const payment = await Payment.create({
-        number: req.body.number,
-        date: req.body.date,
-        customer: req.body.customer,
-        amount: req.body.amount,
-        tender: req.body.tender,
-      });
-      console.log("Payment has been added!");
-
-      // Invoices selected as part of the req.body can be updated in the isPaid prop to true, and the paidBy prop to payment.id
-
-      const invoices = req.body.invoices
-
-      await invoices.forEach(invoice => {
-        Invoice.findOneAndUpdate(
-          { _id: invoice.id },
-          {
-            $set: { isPaid: true, paidBy: payment.id }
-          }
-        )
-      });
-      console.log('All invoices updated!')
-
-      const customer = await Customer.findById(payment.customer)
-      const newBalance = customer.balance - req.body.total
-
-      await Customer.findOneAndUpdate(
-        { _id: payment.customer },
-        {
-          $set: { balance: newBalance }
-        }
-      )
-      console.log("Customer balance successfully updated!")
-      
-      res.redirect(`/customer/${payment.customer}`);
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  createStatements: async (req, res) => {
-    try {
+      const date = new Date(req.body.statementDate)
+      //Prepare list of customers with balances greater than 0
       const customers = await Customer
-      .find()
-      .lean();
-      const invoices = await Invoice
-      .find()
-      .lean()
-      // iterate through customers and find those who had an open balance at the statement date
-      // create pdfs using a template that shares invoice information from the previous month
+        .find({ balance: { $gt: 0 }})
+        .lean();
+
+        const lastMonthEndDate = new Date(date.getFullYear(), date.getMonth(), 0);
+
+        res.render("reports/statements.ejs", { 
+          customers: customers,
+          lastMonthEndDate: lastMonthEndDate,
+          user: req.user,
+          page: "statements", 
+        });
+    }
+    catch (err) {
+      console.error(err);
+      res.status(500).send('Error creating page')
+    }
+
+      
+  },
+  //Assembles and prints statement data in pdf form
+  createStatements: async (req, res) => {
+    // req.body.customers [id's]
+    const customers = req.body.customer
+
+    // Calculate the start and end dates for the previous month
+    const currentDate = new Date();
+    const lastMonthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+
+
+    try {
+      //iterate through the array
+      customers.forEach(async customer => {
+        const statementCustomer = await Customer
+              .findById(customer.id)
+              .lean();
+        const statementInvoices = await Invoice
+              .find({ customer: customer.id, date: {
+                $gte: lastMonthStartDate,
+                $lte: lastMonthEndDate,
+              }})
+              .lean()
+        const statementPayments = await Payment
+              .find({ customer: customer.id, date: {
+                $gte: lastMonthStartDate,
+                $lte: lastMonthEndDate,
+              }})
+              .lean()
+        
+        //Send variables to pdfkit to render a statement page
+      })
+
+      console.log("Statements printed successfully!")
+
+      res.redirect("/reports")
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).send("Error printing statements")
     }
   }
 }

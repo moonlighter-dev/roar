@@ -1,4 +1,5 @@
 const cloudinary = require("../middleware/cloudinary");
+const mafs = require("../middleware/mafs")
 const Invoice = require("../models/Invoice");
 const Customer = require("../models/Customer");
 const Payment = require("../models/Payment");
@@ -77,6 +78,11 @@ module.exports = {
         .findById(customer)
         .lean()
 
+      //calculate due date of invoice based on customer terms
+      //the terms for all customers is "Net 15th", the invoice is due on the 15th of the following month
+      // if this were to change to a selectable field it would be a good switch case
+      //const dueDate = date, change month to next month and day to 15th
+
       let dueAmt = total
       let creditLeft = 0
       let isPaid = false
@@ -90,11 +96,11 @@ module.exports = {
         const currentCounter = await counterDocumentPromise.then(doc => doc.value)
         
         // set the invoice number to the current counter, formatted with the opening balance prefix
-        invoiceNumber = `BAL_${convertValueToSixDigitString(currentCounter)}`
+        invoiceNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter)}`
 
       } else {
         // set the invoice number to the number that was entered with the default invoice prefix 
-        invoiceNumber = `INV_${convertValueToSixDigitString(req.body.number)}`
+        invoiceNumber = `INV_${mafs.convertValueToSixDigitString(req.body.number)}`
       }
 
       // if customer has a credit we want to apply that first
@@ -115,8 +121,7 @@ module.exports = {
         }
       }
 
-      // we also want to update the customer balance
-
+      // Update the customer balance
       const customerUpdatePromise = await Customer.findByIdAndUpdate(
         customer,
         {
@@ -137,6 +142,7 @@ module.exports = {
         image: result.secure_url,
         cloudinaryId: result.public_id,
         due: dueAmt,
+        //dueDate: dueDate,
         isPaid: isPaid,
         paidBy: paidBy,
       });
@@ -158,13 +164,14 @@ module.exports = {
       res.status(500).send("Error creating invoice")
     }
   },
-    // renders page with form to create a new invoice, passing in customers to populate the select field
+    // Renders page with overdue customer information to edit and select for batch recording of finance charges
     financeCharges: async (req, res) => {
       //Convert date string from form input into a date object
       const chargeDateStr = req.body.date
       const chargeDate = new Date(chargeDateStr)
 
       const isOverdue = (currentDate, invoiceDate) => {
+        //TODO rewrite so that a due date is automatically placed on invoices when they are created and then that due date can just be compared with the current date to determine if the invoice is overdue - also can handle the finance charge discrepancy by NOT creating a due date on any finance charges. --> they still need to be on statements tho
         const timeDifferenceMs = currentDate - invoiceDate;
         const daysDifference = timeDifferenceMs / (1000 * 3600 * 24)
         return daysDifference > 30
@@ -216,7 +223,7 @@ module.exports = {
         res.status(500).send("Error loading page")
       }
     },
-  // creates the invoice, uploads the pdf to cloudinary, and updates the customer balance and credit props as needed
+  // loops through the overdue customers and applies the finance charges
   createFinanceCharges: async (req, res) => {
     // console.log(req.body)
     
@@ -232,7 +239,7 @@ module.exports = {
       
       const counterDocumentPromise = await Counter.findOne({ name: "financeChargeCounter" });
       const currentCounter = await counterDocumentPromise.then(doc => doc.value)
-      chargeNumber = `BAL_${convertValueToSixDigitString(currentCounter)}`
+      chargeNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter)}`
 
       // Update the customer balance
 
@@ -321,8 +328,4 @@ module.exports = {
   },
 };
 
-const convertValueToSixDigitString = (value) => {
-  const number = value.toString();
-  const leadingZeros = number.padStart(6 - number.length, '0');
-  return leadingZeros;
-};
+
