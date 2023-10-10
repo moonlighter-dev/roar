@@ -91,18 +91,36 @@ module.exports = {
         .findById(customer)
         .lean()
 
-      //calculate due date of invoice based on customer terms
-      //the terms for all customers is "Net 15th", the invoice is due on the 15th of the following month
-      // if this were to change to a selectable field it would be a good switch case
-      //const dueDate = date, change month to next month and day to 15th
-
       let dueAmt = total
       let creditLeft = 0
       let isPaid = false
       let paidBy = null
       let invoiceNumber
 
-      // if the opening balance option was checked, we want to assign the invoice number according to the counter
+      function setDueDate(invoiceDate, customer) {
+        const terms = customer.terms
+        const currentDate = new Date()
+      
+        const dueYear = invoiceDate.getFullYear()
+      
+        const invoiceMonth = invoiceDate.getMonth()
+      
+        const dueMonth = invoiceMonth === 11 ? 0 : invoiceMonth + 1
+      
+        let dueDay = 15
+        
+        if (terms != "Net 15th") {
+          dueDay = invoiceDate.getDay()
+        }
+      
+        const dueDate = new Date(dueYear, dueMonth, dueDay)
+
+        return dueDate
+      }
+
+      const dueDate = setDueDate(date, customer)
+
+      // if the opening balance option was checked, assign the invoice number according to the counter
       if (openingBalance){
         // lookup the value of the counter
         const counterDocumentPromise = await Counter.findOne({ name: "invoiceCounter" });
@@ -116,7 +134,7 @@ module.exports = {
         invoiceNumber = `INV_${mafs.convertValueToSixDigitString(req.body.number)}`
       }
 
-      // if customer has a credit we want to apply that first
+      // if customer has a credit, apply that first
 
       if (customerPromise.credit > 0) {
         const lastPaymentPromise = await Payment.findOne({ customer: customer._id })
@@ -155,7 +173,7 @@ module.exports = {
         image: result.secure_url,
         cloudinaryId: result.public_id,
         due: dueAmt,
-        //dueDate: dueDate,
+        dueDate: dueDate,
         isPaid: isPaid,
         paidBy: paidBy,
       });
@@ -179,17 +197,23 @@ module.exports = {
   },
     // Renders page with overdue customer information to edit and select for batch recording of finance charges
     financeCharges: async (req, res) => {
+      //check the last finance charge
+      const currentCounter = await Counter.findOne({ name: "financeChargeCounter" });
+      const chargeNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter - 1)}`
+      const lastFinanceCharge = await Invoice.find({ number: chargeNumber })
+
       //Convert date string from form input into a date object
       const chargeDateStr = req.body.date
       const chargeDate = new Date(chargeDateStr)
 
-      const isOverdue = (currentDate, invoiceDate) => {
-        //TODO rewrite so that a due date is automatically placed on invoices when they are created and then that due date can just be compared with the current date to determine if the invoice is overdue - also can handle the finance charge discrepancy by NOT creating a due date on any finance charges. --> they still need to be on statements tho
-        const timeDifferenceMs = currentDate - invoiceDate;
-        const daysDifference = timeDifferenceMs / (1000 * 3600 * 24)
-        return daysDifference > 30
+      if (lastFinanceCharge.date === chargeDate) {
+        return error("Finance charges already exist for this date.")
       }
-      
+
+      function isOverdue(invoice) {
+        const currentDate = new Date()
+        return invoice.dueDate ? currentDate - invoice.dueDate > 0 : false
+      }
 
       try {
         const customers = await Customer
@@ -200,7 +224,7 @@ module.exports = {
           .find({ isPaid: false, })
           .lean();
  
-        const overdueInvoices = openInvoices.filter(invoice => isOverdue(chargeDate, invoice.date))
+        const overdueInvoices = openInvoices.filter(invoice => isOverdue(invoice))
 
         const invoiceCustomers = overdueInvoices.map(invoice => invoice.customer)
 
@@ -245,14 +269,14 @@ module.exports = {
     // console.log(req.body)
     
     try {
+      // use the financeCharge counter to find the most recent finance charge
+
       // req.body: req.body.date (date), req.body.total (array), and req.body.customer (array)
       const { customers, totals, date } = req.body
 
       customers.forEach(async (customer, index) => {
 
       let dueAmt = totals[index]
-      let isPaid = false
-      let paidBy = null
       
       const counterDocumentPromise = await Counter.findOne({ name: "financeChargeCounter" });
       const currentCounter = await counterDocumentPromise.then(doc => doc.value)
@@ -263,7 +287,7 @@ module.exports = {
       const customerUpdatePromise = await Customer.findByIdAndUpdate(
         customer,
         {
-          $inc: { balance: total },
+          $inc: { balance: dueAmt },
         }
       )
       console.log("Customer balance successfully updated!")
@@ -272,10 +296,11 @@ module.exports = {
         number: chargeNumber,
         date: date,
         customer: customer,
-        total: total,
+        total: dueAmt,
         due: dueAmt,
-        isPaid: isPaid,
-        paidBy: paidBy,
+        dueDate: null,
+        isPaid: false,
+        paidBy: null,
       });
 
       await Promise.all([

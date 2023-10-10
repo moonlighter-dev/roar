@@ -1,57 +1,273 @@
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-6">
-      <div class="mt-5">
-        <h2><%= user.companyName %> Daily Sales Summary</h2>
-        <h3><%= date.toLocaleDateString() %></h3>
-        <form action="/reports/createDaily">
-          <table>
-            <!-- AR Report -->
-            <!-- amount -->
-            <!-- ROA -->
-            <!-- by payment type -->
-          </table>
-            <!-- Actual Drawer -->
-                <!-- inputs: -->
-                <!-- Check -->
-                <!-- CC Batch -->
-                <!-- Gift Card -->
-            <!-- Register X Close -->
-                <!-- inputs: -->
-                <!-- Cash, check credit, debit, charge, return, sub reg cash, gift cards sold, payouts, tax -->
-
-          <div class="mb-3">
-            <!-- select from customer list -->
-              <label for="customer" class="form-label">Customer</label>
-              <select name="customer" class="form-control" id="customer" required>
-                <option value="" disabled selected>--Choose customer--</option>
-                <% customers.forEach(customer => { %>
-                  <option value="<%= customer._id %>"><%= customer.companyName %></option>
-                <% }) %>
-              </select>
-          </div>
-          <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" required>
-          </div>
-          <div class="mb-3">
-            <label for="total" class="form-label">Total</label>
-            <input type="number" step="0.01" class="form-control" id="total" name="total" required>
-          </div>
-          <div class="mb-3">
-            <label for="number" class="form-label">Invoice Number</label>
-            <input type="number" class="form-control" id="number" step="1" name="number" required>
-          </div>
-          <div class="mb-3">
-            <label for="imgUpload" class="form-label">Scan</label>
-            <input type="file" class="form-control" id="imageUpload" name="file" required>
-          </div>
-          <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
-        </form>
+<div class="container mx-auto">
+  <div class="content-center mt-5">
+      <div class="col-8">
+        <h3><%= user.companyName %> Daily Sales Summary</h3>
+        <p>Date: <%= date.toLocaleDateString() %></p>
       </div>
-
-    <div class="col-6 mt-5">
-      <a class="btn btn-primary" href="/reports">Return to Reports</a>
+      <div class="mb-3">
+        <h3>Global X</h3>
+        <input type="file" class="form-control" id="globalX">
+        <button class="btn" id="automagic">Automagic</button><span>experimental</span>
+      </div>
     </div>
   </div>
+  <div class="divider"></div>
+  <div class="lg:tooltip" data-tip="" id="balanceCheck">
+  <div class="alert alert-error">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <span>Error! Cash Not Balanced.</span>
+  </div>
+  </div>
+  <div class="alert alert-success" display="none">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <span>Success! Cash Balanced!</span>
+  </div>
+  <form action="/reports/createDaily" method="POST">
+  <!-- AR Report Table -->
+  <table>
+    <tr>
+      <th colspan="2">AR Report</th>
+    </tr>
+    <tr>
+      <th scope="row"><label for="totalAR" class="form-label">Total AR</label></th>
+      <td>
+        <div class="mb-3">
+          <input type="number" step="0.01" class="form-control" id="totalAR" name="totalAR" value="<%= invoices.reduce((acc, invoice) => acc + invoice.total) %>" disabled="true" required>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row"><label for="cash" class="form-label">ROA Cash</label></th>
+      <td>
+        <div class="mb-3">
+          <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CASH").reduce((acc, payment) => acc + payment.total) %>" class="form-control" id="roa-cash" name="roa-cash" required>
+        </div>
+      </td>
+    </tr>
+      <tr>
+        <th scope="row"><label for="roa-check" class="form-label">ROA Check</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CHECK").reduce((acc, payment) => acc + payment.total) %>" class="form-control" id="roa-check" name="roa-check" required>
+          </div>
+        </td>
+        </tr>
+        <tr>
+        <th scope="row"><label for="CC" class="form-label">CC</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CC").reduce((acc, payment) => acc + payment.total) %>" class="form-control" id="roa-cc" name="roa-cc" required>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row"><label for="totalROA" class="form-label">Total ROA</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="<%= payments.reduce((acc, payment) => acc + payment.total) %>" class="form-control" id="totalROA" name="totalROA" required>
+          </div>
+        </td>
+      </tr>
+  </table>
+  <!-- Drawer Inputs -->
+      <div class="divider"></div>
+      <div class="mb-3">
+        <label for="cashInDrawer" class="form-label">Cash in Drawer</label>
+        <input type="number" step="0.01" class="form-control" id="cashInDrawer" value="0.00" name="cashInDrawer">
+      </div>
+      <div class="mb-3">
+        <label for="checks" class="form-label">Total Checks</label>
+        <input type="number" step="0.01" class="form-control" id="checks" value="0.00" name="checks">
+      </div>
+      <div class="mb-3">
+        <label for="cc" class="form-label">CC Batch</label>
+        <input type="number" class="form-control" id="cc" step="0.01" value="0.00" name="cc">
+      </div>
+      <div class="mb-3">
+        <label for="redeemGC" class="form-label">Redeem GC</label>
+        <input type="number" class="form-control" id="redeemGC" step="0.01" value="0.00" name="redeemGC">
+      </div>
+      <div class="divider"></div>
+      <!-- Register X Data -->
+      <div>
+        <h3>Register X Close</h3>
+          <table>
+            <tr>
+              <th scope="row"><label for="xCash" class="form-label">Cash</label></th>
+              <td>          
+                <div class="mb-3">
+                  <input type="number" step="0.01" value="0.00" class="form-control" id="xCash" name="xCash">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xCheck" class="form-label">Check</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xCheck" name="xCheck">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xCredit" class="form-label">Credit</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xCredit" name="xCredit">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xDebit" class="form-label">Debit</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xDebit" name="xDebit">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xGiftCard" class="form-label">Gift Card</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xGiftCard" name="xGiftCard">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xCustomerCharge" class="form-label">Customer Charge</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xCustomerCharge" name="xCustomerCharge">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xReturns" class="form-label">Returns</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xReturns" name="xReturns">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xSubRegCash" class="form-label">Sub Reg Cash</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xSubRegCash" name="xSubRegCash">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xGiftCardsSold" class="form-label">Gift Cards Sold</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xGiftCardsSold" name="xGiftCardsSold">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xPayouts" class="form-label">Total Payouts</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xPayouts" name="xPayouts">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xSubtotal" class="form-label">Subtotal</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="xSubtotal" name="xSubtotal">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xTax" class="form-label">Tax</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" value="0.00" class="form-control" id="xTax" name="xTax">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="xTotalRegSales" class="form-label">Total Reg Sales</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="xTotalRegSales" name="xTotalRegSales">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="totalTaxable" class="form-label">Total Taxable</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="totalTaxable" name="totalTaxable">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="totalExempt" class="form-label">Total Exempt</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="totalExempt" name="totalExempt">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="drawerTotal" class="form-label">Drawer Total</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="drawerTotal" name="drawerTotal">
+          </div>
+        </td>
+            </tr>
+            <tr>
+              <th scope="row"><label for="deposit" class="form-label">Deposit</label></th>
+        <td>          
+          <div class="mb-3">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="deposit" name="deposit">
+          </div>
+        </td>
+            </tr>
+          </table>
+          <!-- Area for notes -->
+          <div class="divider"></div>
+          <label for="notes">Notes:</label>
+          <input type="textarea" id="notes" name="notes">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+  </div>
+</div>
+<!-- List of Invoices and Payments for the Day -->
+<div class="divider"></div>
+      <%- include('../partials/invoiceTable.ejs') %>
+      <dt class="text-sm font-medium">Payments</dt>
+        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+          <table>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Tender</th>
+            </tr>
+            <% payments.forEach( payment => { %>
+              <% const customer = customers.filter(customer => customer.id === payment.customer) %>
+              <tr>
+                <td>
+                  <%= payment.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <%= customer.companyName %>
+                </td>
+                <td>          
+                  $ <%= payment.amount.toFixed(2) %>
+                </td>
+                <td>          
+                  <%= payment.tender %>
+                </td>
+              </tr>
+            <% }) %>
+          </table>
+      <div class="divider"></div>
+<div class="col-6 mt-5">
+  <a class="btn btn-primary" href="/reports">Return to Reports</a>
 </div>

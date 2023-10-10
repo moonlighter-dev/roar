@@ -1,15 +1,11 @@
 const Invoice = require("../models/Invoice")
 const Customer = require("../models/Customer")
 const Payment = require("../models/Payment")
-const fs = require('fs');
 const pdfkit = require("../middleware/pdfkit")
 
 module.exports = {
   getReports: async (req, res) => {
     try {
-      // let's pass in helpful variables so that we can make easier choices
-      // how about adding a date of last finance charge so we can prevent doubling up
-
       //Important Dates for Preparing Reports
       const today = new Date();
       const yesterday = new Date(today);
@@ -32,39 +28,61 @@ module.exports = {
       })
     }
   },
-  createDaily: async (req, res) => {
-    //req.body: req.body.date, req.body.checks, req.body.cc, req.body.redeemGC
-
-    //instead of uploading the image we want to enable client side js to read the file and return the text. Then we will extract the data from the text and combine it with the req.body to create the report.
-
+  reviewDaily: async (req, res) => {
+    const { date } = req.body
 
     try {
 
       //Assemble data for the selected date
       const invoices = await Invoice
-        .find({ date: req.body.date })
+        .find({ date: date, dueDate })
         .lean()
       const payments = await Payment
-        .find({ date: req.body.date })
+        .find({ date: date })
         .lean()
       const customers = await Customer
         .find()
         .lean()   
 
-      const tableDataAR = invoices.map(invoice => {
-        const customer = customers.find(cust => cust.id === invoice.customer)
-        [invoice.number, customer.companyName, invoice.total]
-      })
-
-
-      const tableDataRL = [req.body.cash, req.body.checks, req.body.cc, req.body.redeemGC]
-
-      // console.log("Values entered:", tableDataRL, "Values uploaded:", tableDataX)
-
-      // pdfkit.dailyReport({ tableDataAR, tableDataRL, tableDataX })
+      res.render("reports/daily-report.ejs", {
+        date: date, 
+        customers: customers,
+        invoices: invoices,
+        payments: payments,
+        user: req.user,
+        page: "daily-report", 
+      });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error compiling daily report",
+        page: "error"
+      })
+    }
+  },
+  createDaily: async (req, res) => {
+    const { cash, checks, cc, redeemGC, date } = req.body
+
+
+    try {
+
+      //use table data to print the report to pdf
+      // cash: cash,
+      // checks: checks,
+      // cc: cc,
+      // redeemGC: redeemGC,
+
+      //after success, redirect to /reports
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).render("/error/500.ejs", {
+        user: req.user,
+        error: "Error processing daily report",
+        page: "error"
+      })
     }
   },
   //Renders a page with end of month customer information, stats such as number of statements, and a print button

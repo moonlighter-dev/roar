@@ -37,6 +37,9 @@ const InvoiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  dueDate:  {
+    type: Date,
+  },
   paidBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",

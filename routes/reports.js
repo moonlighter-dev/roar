@@ -8,13 +8,16 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 //Get Reports Menu
 router.get("/", ensureAuth, reportsController.getReports);
 
-//Create Daily Report
-router.post("/dailyreport", ensureAuth, reportsController.createDaily)
+//View Daily Report
+router.post("/dailyreport", ensureAuth, reportsController.reviewDaily)
+
+//Print Daily Report
+router.post("/printdaily", ensureAuth, reportsController.createDaily)
 
 //Review Statements
 router.post("/reviewStatements", ensureAuth, reportsController.reviewStatements);
 
-//Create Statements (using form input)
+//Print Statements
 router.post("/createStatements", ensureAuth, reportsController.createStatements);
 
 module.exports = router;

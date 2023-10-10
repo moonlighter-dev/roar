@@ -1,0 +1,32 @@
+<div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+    <dt class="text-sm font-medium">Invoices</dt>
+    <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Invoice Number</th>
+          <th>Total</th>
+          <th>Tender</th>
+        </tr>
+        <% invoices.forEach( invoice => { %>
+          <% if (!invoice.isPaid) { %>
+          <tr>
+            <td>
+              <%= invoice.date.toLocaleDateString() %>
+            </td>
+            <td>
+              <a href="/invoices/viewInvoice/<%= invoice._id %>">
+                <%= invoice.number %>
+              </a>
+            </td>
+            <td>          
+              $ <%= invoice.total.toFixed(2) %>
+            </td>
+            <td>          
+              $ <%= invoice.due.toFixed(2) %>
+            </td>
+          </tr>
+        <% }}) %>
+      </table>
+    </dd>
+  </div>
