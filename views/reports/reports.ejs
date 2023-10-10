@@ -7,7 +7,7 @@
     <section>
       <h3>Daily Report</h3>
       <div class="row input-group mt-5">
-        <form action="/reports/createDaily/" enctype="multipart/form-data" method="POST">
+        <form action="/reports/dailyReport/" enctype="multipart/form-data" method="POST">
           <div class="mb-3">
             <label for="date" class="form-label">Date</label>
             <input type="date" class="form-control" id="date" name="date" value="<%= yesterday.toISOString().slice(0, 10) %>" required>

@@ -21,7 +21,7 @@ module.exports = {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading reports page",
         page: "error"
@@ -35,14 +35,16 @@ module.exports = {
 
       //Assemble data for the selected date
       const invoices = await Invoice
-        .find({ date: date, dueDate })
+        .find({ date: date })
         .lean()
       const payments = await Payment
         .find({ date: date })
         .lean()
       const customers = await Customer
         .find()
-        .lean()   
+        .lean()
+        
+      // Render report with data
 
       res.render("reports/daily-report.ejs", {
         date: date, 
@@ -55,7 +57,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error compiling daily report",
         page: "error"
@@ -78,7 +80,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error processing daily report",
         page: "error"
@@ -106,7 +108,7 @@ module.exports = {
     }
     catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error creating page",
         page: "error"
@@ -151,7 +153,7 @@ module.exports = {
       res.redirect("/reports")
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error creating statements",
         page: "error"

@@ -1,8 +1,13 @@
 const cloudinary = require("../middleware/cloudinary");
-const mafs = require("../middleware/mafs")
+const mongoose = require ('mongoose');
+const mafs = require("../middleware/mafs");
 const Invoice = require("../models/Invoice");
 const Customer = require("../models/Customer");
 const Payment = require("../models/Payment");
+
+// Access the Counter collections
+const db = mongoose.connection;
+const Counter = db.collection('Counters');
 
 module.exports = {
   // view invoice and associated customer info
@@ -25,7 +30,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading invoice",
         page: "error"
@@ -51,7 +56,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading invoices",
         page: "error"
@@ -73,7 +78,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error retrieving customers for page",
         page: "error"
@@ -192,7 +197,11 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${customer}`);
     } catch (err) {
       console.error(err);
-      res.status(500).send("Error creating invoice")
+        res.status(500).render("error/500.ejs", {
+          user: req.user,
+          error: "Error creating invoice",
+          page: "error"
+        })
     }
   },
     // Renders page with overdue customer information to edit and select for batch recording of finance charges
@@ -228,11 +237,11 @@ module.exports = {
 
         const invoiceCustomers = overdueInvoices.map(invoice => invoice.customer)
 
-        const overdueCustomers = new Set(invoiceCustomers).keys()
+        const overdueCustomers = new Set(invoiceCustomers)
 
-        const overduedata = {}
+        const overduedata = []
         
-        overdueCustomers.forEach(overdueCustomer => {
+        Object.keys(overdueCustomers).forEach(overdueCustomer => {
           const fullCustomer = customers.find(cust => cust.id === overdueCustomer.id)
 
           const overdueBalance = overdueInvoices.filter(invoice => invoice.customer === overdueCustomer.id).reduce(acc, inv => acc += inv.total, 0)
@@ -257,7 +266,7 @@ module.exports = {
   
       } catch (err) {
         console.error(err);
-        res.status(500).render("/error/500.ejs", {
+        res.status(500).render("error/500.ejs", {
           user: req.user,
           error: "Error loading page",
           page: "error"
@@ -319,7 +328,7 @@ module.exports = {
       res.redirect('/reports/');
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error creating charges",
         page: "error"
@@ -369,7 +378,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error deleting invoice",
         page: "error"

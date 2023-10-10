@@ -19,7 +19,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading customers",
         page: "error"
@@ -49,7 +49,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error retrieving customer",
         page: "error"
@@ -90,7 +90,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error adding customer",
         page: "error"
@@ -112,7 +112,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading customer",
         page: "error"
@@ -142,7 +142,7 @@ module.exports = {
 
     } catch (err) {
       console.error(err)
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error updaging customer",
         page: "error"
@@ -158,7 +158,7 @@ module.exports = {
       res.redirect("/customers");
     } catch (err) {
       console.error(err)
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error deleting customer",
         page: "error"
