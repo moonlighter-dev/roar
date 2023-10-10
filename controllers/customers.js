@@ -18,33 +18,12 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
-    }
-  },
-  // JSON
-  getCustomersJSON: async (req, res) => {
-    try {
-      const customers = await Customer
-        .find({ vendor: req.user.id })
-        .sort({ companyName: 1 })
-        .lean();
-
-      res.json(customers);
-
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  getCustomerJSON: async (req, res) => {
-    try {
-      const customer = await Customer
-        .findById(req.params.id)
-        .lean();
-
-      res.json(customer);
-
-    } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error loading customers",
+        page: "error"
+      })
     }
   },
   // individual customer view - access to payment link and list of open invoices and payments
@@ -59,8 +38,6 @@ module.exports = {
       const payments = await Payment
         .find({ customer: customer._id })
         .lean()
-      
-        // console.log(invoices)
 
       res.render("customer/customer.ejs", { 
         customer: customer, 
@@ -71,7 +48,12 @@ module.exports = {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error retrieving customer",
+        page: "error"
+      })
     }
   },
   // generate new customer form page
@@ -107,7 +89,12 @@ module.exports = {
       res.redirect("/customers");
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error adding customer",
+        page: "error"
+      })
     }
   },
   // generate customer edit form and populate with current data
@@ -124,7 +111,12 @@ module.exports = {
        });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error loading customer",
+        page: "error"
+      })
     }
   },
   // update customer info using form
@@ -149,7 +141,12 @@ module.exports = {
       res.redirect(`/customers/viewCustomer/${req.params.id}`);
 
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error updaging customer",
+        page: "error"
+      })
     }
   },
   // deeelaytay a customer
@@ -160,8 +157,12 @@ module.exports = {
       console.log("Deleted Customer");
       res.redirect("/customers");
     } catch (err) {
-      console.log(err)
-      res.redirect(`/customer/${req.params.id}`);
+      console.error(err)
+      res.status(500).render("error/500.ejs", {
+        user: req.user,
+        error: "Error deleting customer",
+        page: "error"
+      })
     }
   },
 };

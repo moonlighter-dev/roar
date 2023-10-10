@@ -1,0 +1,30 @@
+<div class="container mx-auto">
+    <h3>Invoices</h3>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Invoice Number</th>
+          <th>Total</th>
+          <th>Tender</th>
+        </tr>
+        <% invoices.forEach( invoice => { %>
+          <% if (!invoice.isPaid) { %>
+          <tr>
+            <td>
+              <%= invoice.date.toLocaleDateString() %>
+            </td>
+            <td>
+              <a href="/invoices/viewInvoice/<%= invoice._id %>">
+                <%= invoice.number %>
+              </a>
+            </td>
+            <td>          
+              $ <%= invoice.total.toFixed(2) %>
+            </td>
+            <td>          
+              $ <%= invoice.due.toFixed(2) %>
+            </td>
+          </tr>
+        <% }}) %>
+      </table>
+  </div>

@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../middleware/multer");
 const reportsController = require("../controllers/reports");
 const { ensureAuth, ensureGuest } = require("../middleware/auth");
 
@@ -9,16 +8,16 @@ const { ensureAuth, ensureGuest } = require("../middleware/auth");
 //Get Reports Menu
 router.get("/", ensureAuth, reportsController.getReports);
 
-//Create a Daily AR Report (using form input)
-router.post("/createDaily", upload.single("file"), reportsController.createDaily);
+//View Daily Report
+router.post("/dailyReport", ensureAuth, reportsController.reviewDaily)
 
-//Go to Finance Charge Form
-router.get("/newInterest", reportsController.newInterest)
+//Print Daily Report
+router.post("/printDailyReport", ensureAuth, reportsController.createDaily)
 
-//Create Finance Charges (using form input)
-router.post("/createInterest", reportsController.createInterest);
+//Review Statements
+router.post("/reviewStatements", ensureAuth, reportsController.reviewStatements);
 
-//Create Statements (using form input)
-router.get("/createStatements", reportsController.createStatements);
+//Print Statements
+router.post("/createStatements", ensureAuth, reportsController.createStatements);
 
 module.exports = router;

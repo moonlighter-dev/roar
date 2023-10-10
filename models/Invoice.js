@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const InvoiceSchema = new mongoose.Schema({
 
   number: {
+     //regular invoices "INV_000000", opening balances "BAL_000000", finance charges "FIN_000000"
     type: String,
     required: true,
     unique: true,
@@ -22,11 +23,11 @@ const InvoiceSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    
+    unique: true,
   },
   cloudinaryId: {
     type: String,
-    
+    unique: true,
   },
   isPaid: {
     type: Boolean,
@@ -36,20 +37,13 @@ const InvoiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  overDue: {
-    type: Number,
-    default: 0.00,
+  dueDate:  {
+    type: Date,
   },
   paidBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Payment",
   },
-  //regular invoices accumulate interest, finance charges do not
-  financeCharge: {
-    type: Boolean,
-    required: true,
-    default: false,
-  }
 });
 
 module.exports = mongoose.model("Invoice", InvoiceSchema);

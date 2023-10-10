@@ -6,10 +6,12 @@
         <h3><%= customer.companyName %></h3>
       </a>
     </div>
+    <div class="divider"></div>
     <div class="col-6">
         <h3>$ <%= invoice.total.toFixed(2) %></h3>
         <h3><%= invoice.date.toLocaleDateString() %></h3>      
     </div>
+    <div class="divider-horizontal"></div>
     <div class="row mt-5">
       <embed src="<%= invoice.image %>" width="300px" height="500px" />
     </div>

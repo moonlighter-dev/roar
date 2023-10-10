@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-8">
+      <div class="mt-5">
+        <h2>Assess Charges</h2>
+        <div class="divider"></div>
+        <form action="/invoice/createFinanceCharges" method="POST">   
+              <!-- Accounts Receivable Report for Finance Charges  -->
+              <h3>Charge Date: <%= date.toLocaleDateString() %></h3>
+              <input type="hidden" id="date" name="date" value="<%= date %>">
+    <div class="row justify-content-center mt-5">
+      <h4>Overdue Balances and Suggested Charges</h4>
+      <div class="divider"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Customer</th>
+            <th>Balance</th>
+            <th>Overdue</th>
+            <th>Charge</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% overduedata.forEach( (customer, index) => { %>
+          <tr id="<%= customer.id %>">
+            <td>
+              <input type="checkbox" id="<%= customer.id %>" name="customers" onchange="checkboxHandler(event)" value="<%= customer.id %>" disabled>
+            </td>
+            <td>
+              <a href="/customers/viewCustomer/<%= customer.id %>">
+                <%= customer.companyName %>
+              </a>
+            </td>
+            <td>          
+              $ <%= customer.balance.toFixed(2) %>
+            </td>
+            <td>
+              $ <input class="overdue" type="number" step="0.01" readonly="true" name="overdue" value="<%= overdue.toFixed(2) %>" style="border: 0; width: 60px">
+            </td>
+            <td>
+              $ <input class="financeCharge" type="number" step="0.01" readonly="false" name="financeCharge" value="<%= financeCharge %>" style="border: 0; width: 60px">
+            </td>
+          </tr>
+        <% }) %>
+        </tbody>
+        <tfoot>
+          <th scope="row" colspan="5">Total</th>
+          <td class="total">
+            $ 
+            <input type="number" step="0.01" readonly="true" id="total" name="total" value="0.00" style="border: 0; width: 60px">
+          </td>
+        </tfoot>
+      </table>
+    </div>
+          <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+      </div>
+  </div>
+</div>
+
