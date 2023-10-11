@@ -6,7 +6,6 @@ const InvoiceSchema = new mongoose.Schema({
      //regular invoices "INV_000000", opening balances "BAL_000000", finance charges "FIN_000000"
     type: String,
     required: true,
-    unique: true,
   },
   date: {
     type: Date,

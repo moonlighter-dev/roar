@@ -108,17 +108,18 @@ module.exports = {
       function setDueDate(invoiceDate, customer) {
         const terms = customer.terms
         const currentDate = new Date()
+        const date = new Date(invoiceDate)
       
-        const dueYear = invoiceDate.getFullYear()
+        const dueYear = date.getFullYear()
       
-        const invoiceMonth = invoiceDate.getMonth()
+        const invoiceMonth = date.getMonth()
       
         const dueMonth = invoiceMonth === 11 ? 0 : invoiceMonth + 1
       
         let dueDay = 15
         
         if (terms != "Net 15th") {
-          dueDay = invoiceDate.getDay()
+          dueDay = date.getDay()
         }
       
         const dueDate = new Date(dueYear, dueMonth, dueDay)
@@ -176,10 +177,7 @@ module.exports = {
 
       await Promise.all([
         customerUpdatePromise,
-        invoicePromise ? counterDocumentPromise.then(doc => {
-          doc.value += 1;
-          return doc.save();
-        }) : Promise.resolve(),
+        invoicePromise
       ]);
 
       console.log("Invoice has been added!");
