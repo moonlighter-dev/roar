@@ -5,29 +5,29 @@
           <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
             <!-- passes in the selected customer -->
             <div class="w-full md:w-1/2">
-              <label for="customer" class="form-label"><h3><%= customer.companyName %></h3></label>
+              <label for="customer" class="label"><h3><%= customer.companyName %></h3></label>
               <input type="hidden" class="form-control" id="customer" name="customer" value="<%= customer._id %>">
               <h3>Total Balance $ <%= customer.balance.toFixed(2) %></h3>
             </div>
           </div>
           <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
           <div class="w-full md:w-1/2">
-            <label for="date" class="form-label">Date</label>
+            <label for="date" class="label">Date</label>
             <input type="date" class="form-control" id="date" name="date" value="<%= date.toLocaleDateString() %>" required>
           </div>
           </div>
           <div class="w-full md:w-1/2">
-            <label for="amount" class="form-label">Amount</label>
+            <label for="amount" class="label">Amount</label>
             <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
           </div>
           <div class="w-full md:w-1/2">
-            <label for="number" class="form-label">Reference Number</label>
+            <label for="number" class="label">Reference Number</label>
             <input type="number" step="1" class="form-control" id="number" name="number" required>
           </div>
           <div class="w-full md:w-1/2">
             <!-- select from a list of possible tender types -->
-              <label for="tender" class="form-label">Tender</label>
-              <select name="tender" class="form-control" id="tender" required>
+              <label for="tender" class="label">Tender</label>
+              <select name="tender" class="form-control select" id="tender" required>
                 <option value="" disabled selected>--Choose tender--</option>
                   <% ["Cash", "Credit Card", "Check", "Returned Merchandise", "Money Order", "Gift Card"].forEach(type => { %>
                     <option value="<%= type %>"><%= type %></option>

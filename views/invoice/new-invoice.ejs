@@ -1,19 +1,17 @@
-<div class="container mx-auto">
-  <div class="content-center mt-5">
-    <div class="col-8">
-      <div class="mt-5">
-        <h2>Add an Invoice</h2>
-          <div class="mb-3">
-            <label for="imgUpload" class="form-label">Scan</label>
-            <input type="file" class="form-control" id="imageUpload" form="invoiceForm" name="file" required>
-            <button class="btn" id="automagic">Automagic</button><span>experimental</span>
+<div class="container mx-auto p-6">
+        <h2 class="text-2xl mb-4">Add an Invoice</h2>
+        <form action="/invoices/createInvoice" id="invoiceForm" enctype="multipart/form-data" method="POST"></form>
+          <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
+            <label for="imgUpload" class="label">Scan</label>
+            <input type="file" class="file-input w-full max-w-xs" id="imageUpload" form="invoiceForm" name="file" required>
+            <button class="btn" hidden="true" id="automagic">Automagic</button>
           </div>
           <div class="divider"></div>
-          <form action="/invoices/createInvoice" id="invoiceForm" enctype="multipart/form-data" method="POST">
+          
           <div class="mb-3">
             <!-- select from customer list -->
-              <label for="customer" class="form-label">Customer</label>
-              <select name="customer" class="form-control" id="customer" required>
+              <label for="customer" class="label">Customer</label>
+              <select name="customer" class="form-control select select-primary w-full max-w-xs" id="customer" required>
                 <option value="" disabled selected>--Choose customer--</option>
                 <% customers.forEach(customer => { %>
                   <option value="<%= customer._id %>" id="customers"><%= customer.companyName %></option>
@@ -21,19 +19,17 @@
               </select>
           </div>
           <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
+            <label for="date" class="label">Date</label>
             <input type="date" class="form-control" id="date" name="date" required>
           </div>
           <div class="mb-3">
-            <label for="total" class="form-label">Total</label>
-            <input type="number" step="0.01" class="form-control" id="total" name="total" required>
+            <label for="total" class="label">Total $</label>
+            <input type="number" step="0.01" class="form-control" id="total" placeholder="0.00" name="total" required>
           </div>
           <div class="mb-3">
-            <label for="number" class="form-label">Invoice Number</label>
-            <input type="number" class="form-control" id="number" step="1" name="number" required>
+            <label for="number" class="label">Invoice Number</label>
+            <input type="number" class="form-control" id="number" name="number" placeholder="000000" required>
           </div>
           <button type="submit" class="btn btn-primary" value="Upload">Submit</button>
         </form>
-      </div>
-  </div>
 </div>

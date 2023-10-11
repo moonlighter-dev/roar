@@ -3,30 +3,30 @@
   <form action="/customers/createCustomer" method="POST" class="space-y-4">
     <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
       <div class="w-full md:w-1/2 tooltip" data-tip="(or person's name - last, first)">
-        <label for="companyName" class="text-sm">Company Name</label>
-        <input type="text" class="form-input" id="companyName" name="companyName" required>
+        <label for="companyName" class="label">Company Name</label>
+        <input type="text" class="input input-bordered w-full max-w-xs" id="companyName" name="companyName" required>
       </div>
       <div class="w-full md:w-1/2 tooltip" data-tip="contact name, first last, or company name">
-        <label for="fullName" class="text-sm">Full Name</label>
-        <input type="text" class="form-input" id="fullName" name="fullName" required>
+        <label for="fullName" class="label">Full Name</label>
+        <input type="text" class="input input-bordered w-full max-w-xs" id="fullName" name="fullName" required>
       </div>
     </div>
     <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
       <div class="w-full md:w-1/2 tooltip" data-tip="(xxx)xxx-xxxx">
-        <label for="phone" class="text-sm">Phone</label>
-        <input type="tel" class="form-input" id="phone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="phone">
+        <label for="phone" class="label">Phone</label>
+        <input type="tel" class="input input-bordered w-full max-w-xs" id="phone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="phone">
       </div>
       <div class="w-full md:w-1/2 tooltip" data-tip="(xxx)xxx-xxxx">
-        <label for="altPhone" class="text-sm">Alt Phone</label>
-        <input type="tel" class="form-input" id="altPhone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="altPhone">
+        <label for="altPhone" class="label">Alt Phone</label>
+        <input type="tel" class="input input-bordered w-full max-w-xs" id="altPhone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="altPhone">
       </div>
     </div>
     <div class="flex flex-col space-y-2">
-      <label for="email" class="text-sm">Email</label>
-      <input type="email" class="form-input" id="email" name="email">
+      <label for="email" class="label">Email</label>
+      <input type="email" class="input input-bordered w-full max-w-xs" id="email" name="email">
     </div>
     <div class="flex flex-col space-y-2">
-      <label for="billTo" class="text-sm">Bill To</label>
+      <label for="billTo" class="label">Bill To</label>
       <textarea class="form-textarea h-28" rows="4" id="billTo" name="billTo" placeholder="" required>
 Name
 Address
@@ -35,12 +35,12 @@ City, State Zip
     </div>
     <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
       <div class="w-full md:w-1/2">
-        <label for="limit" class="text-sm">Credit Limit</label>
-        <input type="number" step="0.01" class="form-input" id="limit" name="limit" min="100.00" max="5000.00" required>
+        <label for="limit" class="label">Credit Limit</label>
+        <input type="number" step="0.01" class="input input-bordered w-full max-w-xs" id="limit" name="limit" min="100.00" max="5000.00" required>
       </div>
       <div class="w-full md:w-1/2">
-        <label for="openingBalance" class="text-sm">Opening Balance</label>
-        <input type="number" step="0.01" class="form-input" id="openingBalance" name="openingBalance" min="100.00" max="5000.00" value="0.00">
+        <label for="openingBalance" class="label">Opening Balance</label>
+        <input type="number" step="0.01" class="input input-bordered w-full max-w-xs" id="openingBalance" name="openingBalance" min="100.00" max="5000.00" value="0.00">
       </div>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
