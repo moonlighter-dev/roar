@@ -32,13 +32,14 @@ module.exports = {
   newPayment: async (req, res) => {
     // console.log(req.params)
     try {
+      const today = new Date()
       const customer = await Customer
         .findById(req.params.id)
         .lean();
       const allInvoices = await Invoice
         .findById(customer._id)
         .sort({ date: 1 })
-      const invoices = allInvoices.filter(invoice => !invoice.isPaid)
+      const invoices = allInvoices ? allInvoices.filter(invoice => !invoice.isPaid) : []
       
         console.log(invoices)
 
@@ -46,11 +47,12 @@ module.exports = {
         customer: customer, 
         invoices: invoices, 
         user: req.user,
+        date: today,
         page: "new-payment"
       });
     } catch (err) {
       console.error(err);
-      res.status(500).render("/error/500.ejs", {
+      res.status(500).render("error/500.ejs", {
         user: req.user,
         error: "Error loading payment page",
         page: "error"

@@ -1,87 +1,76 @@
-<div class="overflow-hidden shadow sm:rounded-lg">
+<div class="overflow-hidden shadow">
   <div class="flex w-full px-4 py-5 sm:px-6">
-      <div class="grid h-25 flex-grow card place-items-center">
-        <h3 class="text-lg font-medium leading-6">Customer Information</h3>
-        <p class="mt-1 max-w-2xl text-sm">Contact details, invoices, and payments</p>
-      </div>
-      <div class="grid h-25 flex-grow card place-items-center">
-        <div>
-          <a class="btn btn-primary" href="/payments/newPayment/<%= customer._id %>">Make Payment</a>
-        </div>
-        <div class="mt-5">
-        <a class="btn btn-primary" href="/customers/editCustomer/<%= customer._id %>">Edit Customer</a>
-        </div>
-      </div>
+    <div class="join join-vertical">
+      <a class="btn join-item btn-primary" href="/payments/newPayment/<%= customer._id %>">Make Payment</a>
+      <a class="btn join-item btn-primary" href="/customers/editCustomer/<%= customer._id %>">Edit Customer</a>
     </div>
   </div>
   <div class="divider"></div>
-  <div class="pl-4">
-    <dl>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Company name</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.companyName %></dd>
+  <div class="container mx-auto p-6">
+    <h2 class="text-2xl mb-4"><%= customer.companyName %></h2>
+    <form class="space-y-4">
+      <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
+        <div class="w-full md:w-1/2">
+          <label for="companyName" class="text-sm">Company Name</label>
+          <input type="text" class="form-input" id="companyName" name="companyName" value="<%= customer.companyName %>" disabled required>
+        </div>
+        <div class="w-full md:w-1/2">
+          <label for="fullName" class="text-sm">Full Name</label>
+          <input type="text" class="form-input" id="fullName" name="fullName" value="<%= customer.fullName %>" disabled required>
+        </div>
       </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Full Name</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.fullName %></dd>
+      <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
+        <div class="w-full md:w-1/2">
+          <label for="phone" class="text-sm">Phone</label>
+          <input type="tel" class="form-input" id="phone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="phone" value="<%= customer.phone %>" disabled>
+        </div>
+        <div class="w-full md:w-1/2">
+          <label for="altPhone" class="text-sm">Alt Phone</label>
+          <input type="tel" class="form-input" id="altPhone" pattern="[(][0-9]{3}[)][0-9]{3}[-][0-9]{4}" name="altPhone" value="<%= customer.altPhone %>" disabled>
+        </div>
       </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Current Balance</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= customer.balance.toFixed(2) %></dd>
+      <div class="flex flex-col space-y-2">
+        <label for="email" class="text-sm">Email</label>
+        <input type="email" class="form-input" id="email" name="email" value="<%= customer.email %>" disabled>
       </div>
-
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Phone</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
-          <% if (customer.phone) { %>
-          <%= customer.phone %>
-          <% } else { %>
-          not entered
-          <% } %></dd>
+      <div class="flex flex-col space-y-2">
+        <label for="billTo" class="text-sm">Bill To</label>
+        <textarea class="form-textarea h-28" rows="4" id="billTo" name="billTo" disabled required>
+  <%= customer.billTo %>
+        </textarea>
       </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Alt Phone</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
-          <% if (customer.altPhone) { %>
-          <%= customer.altPhone %>
-          <% } else { %>
-          not entered
-          <% } %></dd>
+      <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
+        <div class="w-full md:w-1/2">
+          <label for="limit" class="text-sm">Credit Limit $</label>
+          <input type="number" step="0.01" class="form-input" id="limit" name="limit" value="<%= customer.limit.toFixed(2) %>" disabled>
+        </div>
+        <div class="w-full md:w-1/2">
+          <label for="openingBalance" class="text-sm">Opening Balance $</label>
+          <input type="number" step="0.01" class="form-input" id="openingBalance" name="openingBalance" value="<%= customer.openingBalance ? customer.openingBalance.toFixed(2) : 0.00 %>" disabled>
+        </div>
+        <div class="w-full md:w-1/2">
+          <label for="addedOn" class="text-sm">Date Added</label>
+          <input type="text" class="form-input" id="addedOn" name="addedOn" value="<%= customer.addedOn.toLocaleDateString() %>" disabled>
+        </div>
       </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Email address</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">        
-          <% if (customer.email) { %>
-          <%= customer.email %>
-          <% } else { %>
-          not entered
-          <% } %></dd>
-      </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Charge Limit</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= customer.limit.toFixed(2) %></dd>
-      </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Opening Balance</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">$ <%= //customer.openingBalance.toFixed(2) %></dd>
-      </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Bill To</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><pre><%= customer.billTo %></pre></dd>
-      </div>
-      <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Date Added</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0"><%= customer.addedOn.toLocaleDateString() %></dd>
-      </div>
+    </form>
+  </div>
+  <div class="col-6 mt-5">
+    <form action="/customers/deleteCustomer/<%= customer._id %>?_method=DELETE" method="POST" class="col-3">
+    <button class="btn btn-danger fa fa-trash" type="submit">Delete this Customer</button>
+    </form>
+  </div>
       <div class="divider"></div>
       <%- include('../partials/invoiceTable.ejs') %>
       <div class="divider"></div>
       <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium">Payments</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-          <table>
+          <table class="table table-zebra">
+            <thead>
+              Payments
+            </thead>
             <tr>
               <th>Date</th>
+              <th>Delete</th>
               <th>Reference Number</th>
               <th>Amount</th>
             </tr>
@@ -99,6 +88,9 @@
                   </form>
                 </td>
                 <td>          
+                  <%= payment.number %>
+                </td>
+                <td>          
                   $ <%= payment.amount.toFixed(2) %>
                 </td>
               </tr>
@@ -108,4 +100,6 @@
       </div>
     </dl>
   </div>
+</div>
+
 </div>

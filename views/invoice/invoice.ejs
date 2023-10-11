@@ -1,13 +1,13 @@
 <div class="container mx-auto">
   <div class="content-center mt-5">
-    <div class="col-6">
+    <div class="col-8">
       <h2>INV# <%= invoice.number %></h2>
       <a href="/customers/viewCustomer/<%= customer._id %>">
         <h3><%= customer.companyName %></h3>
       </a>
     </div>
     <div class="divider"></div>
-    <div class="col-6">
+    <div class="col-8">
         <h3>$ <%= invoice.total.toFixed(2) %></h3>
         <h3><%= invoice.date.toLocaleDateString() %></h3>      
     </div>

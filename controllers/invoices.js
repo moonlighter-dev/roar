@@ -90,18 +90,21 @@ module.exports = {
     // console.log(req.body)
 
     try {
-      const { customer, total, openingBalance, date } = req.body
+      //Prepare the body
+      const { customer, total, date } = req.body
 
+      //Get the customer
       const customerPromise = await Customer
         .findById(customer)
         .lean()
 
+      //Track invoice and customer data
       let dueAmt = total
       let creditLeft = 0
       let isPaid = false
       let paidBy = null
-      let invoiceNumber
 
+      //Set due date based on terms
       function setDueDate(invoiceDate, customer) {
         const terms = customer.terms
         const currentDate = new Date()
@@ -125,19 +128,7 @@ module.exports = {
 
       const dueDate = setDueDate(date, customer)
 
-      // if the opening balance option was checked, assign the invoice number according to the counter
-      if (openingBalance){
-        // lookup the value of the counter
-        const counterDocumentPromise = await Counter.findOne({ name: "invoiceCounter" });
-        const currentCounter = await counterDocumentPromise.then(doc => doc.value)
-        
-        // set the invoice number to the current counter, formatted with the opening balance prefix
-        invoiceNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter)}`
-
-      } else {
-        // set the invoice number to the number that was entered with the default invoice prefix 
-        invoiceNumber = `INV_${mafs.convertValueToSixDigitString(req.body.number)}`
-      }
+      const invoiceNumber = `INV_${mafs.convertValueToSixDigitString(req.body.number)}`
 
       // if customer has a credit, apply that first
 
@@ -185,8 +176,7 @@ module.exports = {
 
       await Promise.all([
         customerUpdatePromise,
-        invoicePromise,
-        openingBalance ? counterDocumentPromise.then(doc => {
+        invoicePromise ? counterDocumentPromise.then(doc => {
           doc.value += 1;
           return doc.save();
         }) : Promise.resolve(),

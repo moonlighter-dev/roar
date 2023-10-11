@@ -1,6 +1,11 @@
+const mongoose = require("mongoose");
 const Customer = require("../models/Customer");
 const Invoice = require("../models/Invoice");
 const Payment = require("../models/Payment");
+
+// Access the Counter collections
+const db = mongoose.connection;
+const Counter = db.collection('Counters');
 
 module.exports = {
   // get all customers - also used as a dashboard
@@ -68,7 +73,7 @@ module.exports = {
     // console.log(req.body)
     try {
 
-      await Customer.create({
+      const customer = await Customer.create({
         companyName: req.body.companyName,
         fullName: req.body.fullName,
         phone: req.body.phone,
@@ -86,7 +91,30 @@ module.exports = {
       });
 
       console.log("Customer has been added!");
-      res.redirect("/customers");
+
+      if (customer.openingBalance > 0) {
+        const counterDocumentPromise = await Counter.findOne({ name: "invoiceCounter" });
+        const currentCounter = await counterDocumentPromise.then(doc => doc.value)
+        
+        // set the invoice number to the current counter, formatted with the opening balance prefix
+        const invoiceNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter)}`
+
+        const openingBalance = await Invoice.create({
+          date: new Date(),
+          number: invoiceNumber,
+          customer: customer.id,
+          total: customer.openingBalance,
+          due: customer.openingBalance,
+          dueDate: new Date(),
+          isPaid: false,
+          paidBy: null,
+        })
+      }
+      res.render("/customer/customer.ejs", {
+        customer: customer, 
+        user: req.user, 
+        page: "view-customer",
+      });
 
     } catch (err) {
       console.error(err);
@@ -123,8 +151,20 @@ module.exports = {
   updateCustomer: async (req, res) => {
     // console.log(req.body)
     try {
-      await Customer.findOneAndUpdate(
-        { _id: req.params.id },
+      const customer = await Customer.find(req.body.customer).lean()
+      // check if the opening balance has changed
+      // delete, create, or update an opening balance invoice
+      if (customer.openingBalance != req.body.openingBalance) {
+        if (customer.openingBalance === 0) {
+          //add an opening balance invoice
+        } else if (req.body.openingBalance === 0) {
+          //find and delete an opening balance invoice
+        } else {
+          //find an opening balance invoice and update it
+        }
+    }
+
+      await Customer.findOneByIdAndUpdate((req.body.customer),
         {
           companyName: req.body.companyName,
           fullName: req.body.fullName,
