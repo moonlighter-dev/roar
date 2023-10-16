@@ -37,11 +37,11 @@ module.exports = {
         .findById(req.params.id)
         .lean();
       const allInvoices = await Invoice
-        .findById(customer._id)
+        .find({ customer: customer._id })
         .sort({ date: 1 })
-      const invoices = allInvoices ? allInvoices.filter(invoice => !invoice.isPaid) : []
+      const invoices = allInvoices ? allInvoices.filter(invoice => invoice.isPaid === false) : []
       
-        console.log(invoices)
+        // console.log(allInvoices)
 
       res.render("payment/new-payment.ejs", { 
         customer: customer, 

@@ -1,14 +1,16 @@
-
-<footer class="footer p-6">
-    <% if (user) { %>
+<footer class="footer footer-center p-10 bg-primary text-primary-content">
+    <aside>
+        <% if (user) { %>
+            <div>
+                <a class="btn btn-neutral" href="/customers">Return to Customers</a>
+            </div>
+        <% } %>
+      <div class="divider"></div>
         <div>
-            <a class="btn btn-primary" href="/customers">Return to Customers</a>
+        <p class="font-bold">Developed by <a class="link link-hover" href="https://danaarroway.com">Dana Arroway</a></p>
         </div>
-    <% } %>
-    <div>
+      <p>    <div>
         <p>Checkout the code on <a class="link link-hover" href="https://github.com/moonlighter-dev/roar">Github</a></p>
-        </div> 
-        <div>
-        <p>Developed by <a class="link link-hover" href="https://danaarroway.com">Dana Arroway</a></p>
-        </div>
-</footer>
+        </div></p>
+    </aside> 
+  </footer>

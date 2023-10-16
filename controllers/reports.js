@@ -12,9 +12,14 @@ module.exports = {
       yesterday.setDate(today.getDate() - 1);
 
       const lastMonthEndDate = new Date(today.getFullYear(), today.getMonth(), 0);
+
+      const customers = await Customer.find().lean()
+      const customerIds = customers.map(customer => customer.id)
       
       res.render("reports/reports.ejs", { 
         user: req.user, 
+        customers: customers,
+        customerIds: customerIds,
         yesterday: yesterday,
         lastMonthEndDate: lastMonthEndDate,
         page: "reports" 

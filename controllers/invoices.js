@@ -200,7 +200,7 @@ module.exports = {
       const lastFinanceCharge = await Invoice.find({ number: chargeNumber })
 
       //Convert date string from form input into a date object
-      const chargeDateStr = req.body.date
+      const chargeDateStr = req.body.chargeDate
       const chargeDate = new Date(chargeDateStr)
 
       if (lastFinanceCharge.date === chargeDate) {
@@ -266,8 +266,6 @@ module.exports = {
     // console.log(req.body)
     
     try {
-      // use the financeCharge counter to find the most recent finance charge
-
       // req.body: req.body.date (date), req.body.total (array), and req.body.customer (array)
       const { customers, totals, date } = req.body
 
@@ -275,12 +273,12 @@ module.exports = {
 
       let dueAmt = totals[index]
       
+      // use the financeCharge counter to find the most recent finance charge
       const counterDocumentPromise = await Counter.findOne({ name: "financeChargeCounter" });
       const currentCounter = await counterDocumentPromise.then(doc => doc.value)
       chargeNumber = `BAL_${mafs.convertValueToSixDigitString(currentCounter)}`
 
       // Update the customer balance
-
       const customerUpdatePromise = await Customer.findByIdAndUpdate(
         customer,
         {
@@ -289,6 +287,7 @@ module.exports = {
       )
       console.log("Customer balance successfully updated!")
 
+      //create the finance charge invoice
       const chargePromise = await Invoice.create({
         number: chargeNumber,
         date: date,

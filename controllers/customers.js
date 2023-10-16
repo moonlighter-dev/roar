@@ -131,9 +131,13 @@ module.exports = {
       const customer = await Customer
         .findById(req.params.id)
         .lean();
+      const invoices = await Invoice
+        .find({ customer: customer._id, isPaid: false })
+        .lean()
 
       res.render("customer/edit-customer.ejs", { 
         customer: customer, 
+        invoices: invoices,
         user: req.user, 
         page: "edit-customer",
        });
@@ -192,7 +196,7 @@ module.exports = {
   // deeelaytay a customer
   deleteCustomer: async (req, res) => {
     try {
-      await Customer.remove({ _id: req.params.id });
+      await Customer.findByIdAndDelete(req.params.id);
 
       console.log("Deleted Customer");
       res.redirect("/customers");

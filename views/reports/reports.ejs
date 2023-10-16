@@ -1,45 +1,55 @@
   <main>
     <div class="container mx-auto p-6">
-      <div class="mt-5">
-        <p><strong>Reports</strong></p>
-      </div>
+      <h1>Reports</h1>
       <div class="divider"></div>
-    <section>
-      <h3>Daily Report</h3>
-      <div class="row mt-5">
-        <form action="/reports/dailyReport/" enctype="multipart/form-data" method="POST">
-          <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" value="<%= yesterday.toISOString().slice(0, 10) %>" required>
+        <div class="card w-96 bg-neutral text-primary-focus-content">
+          <div class="card-body">
+          <div class="card-title">Daily Report</div>
+          <form action="/reports/dailyReport/" enctype="multipart/form-data" method="POST">
+              <label for="date" class="form-label">Date</label>
+              <input type="date" class="form-control" id="date" name="date" value="<%= yesterday.toISOString().slice(0, 10) %>" required>
+              <div class="card-actions justify-end">
+                <button type="submit" class="btn btn-primary">Review Report</button>
+              </div>
+            </form>
           </div>
-          <button type="submit" class="btn btn-primary">Review Report</button>
-        </form>
-    </div>
-    </section>
-    <div class="divider"></div>
-    <section>
-      <h3>Finance Charges</h3>
-      <form action="/invoices/financeCharges/" method="POST">
-        <div class="mb-3">
-          <label for="chargeDate" class="form-label">Charge Date</label>
-          <input type="date" class="form-control" id="chargeDate" name="chargeDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
-          <!-- Make sure this is the last day of the previous month, so the charge will show up on the statement. Only one batch of finance charges should be allowed per month -->
         </div>
-        <button type="submit" class="btn btn-primary">Review Charges</button>
-      </form>     
-    </section>
-    <div class="divider"></div>
-    <section>
-      <h3>Review Statements</h3>
-      <form action="/reports/reviewStatements/" method="POST">
-        <div class="mb-3">
-          <label for="statementDate" class="form-label">Statement Date</label>
-          <input type="date" class="form-control" id="statementDate" name="statementDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
-          <!-- This should default to the last day of the previous month. -->
-          <!-- Can add radio button for All customers or select one customer -->
+        <div class="divider"></div>
+
+        <div class="card w-96 bg-neutral text-primary-focus-content">
+          <div class="card-body">
+          <div class="card-title">Finance charges</div>
+          <form action="/invoices/financeCharges/" enctype="multipart/form-data" method="POST">
+              <label for="chargeDate" class="form-label">Date</label>
+              <!-- Make sure this is the last day of the previous month, so the charge will show up on the statement. Only one batch of finance charges should be allowed per month -->
+              <input type="date" class="form-control" id="chargeDate" name="chargeDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
+              <div class="card-actions justify-end">
+                <button type="submit" class="btn btn-primary">Review Charges</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary">Review Statements</button>
-      </form>      
-    </section>
-  </div>  
+        <div class="divider"></div>
+        <div class="card w-96 bg-neutral text-primary-focus-content">
+          <div class="card-body">
+          <div class="card-title">Review Statements</div>
+          <form action="/reports/reviewStatements/" enctype="multipart/form-data" method="POST">
+              <label for="statementDate" class="form-label">Date</label>
+              <!-- This should default to the last day of the previous month. -->
+              <!-- Can add radio button for All customers or select one customer -->
+              <input type="date" class="form-control" id="statementDate" name="statementDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
+              <!-- select from customer list -->
+              <label for="customer" class="label">Customer</label>
+              <select name="customer" class="form-control select select-primary w-full max-w-xs" id="customer" required>
+                <option value="<%= customers %>" selected>All customers</option>
+                <% customers.forEach(customer => { %>
+                  <option value="<%= customer._id %>" id="customers"><%= customer.companyName %></option>
+                <% }) %>
+              </select>
+              <div class="card-actions justify-end">
+                <button type="submit" class="btn btn-primary">Review Statements</button>
+              </div>
+            </form>
+          </div>
+        </div>
 </main>

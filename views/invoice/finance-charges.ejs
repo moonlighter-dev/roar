@@ -1,18 +1,15 @@
-<div class="container">
-  <div class="mt-5">
-    <div class="col-8">
-      <div class="mt-5">
-        <h2>Assess Charges</h2>
-        <div class="divider"></div>
-        <form action="/invoice/createFinanceCharges" method="POST">   
-              <!-- Accounts Receivable Report for Finance Charges  -->
-              <h3>Charge Date: <%= date.toLocaleDateString() %></h3>
-              <input type="hidden" id="date" name="date" value="<%= date %>">
-    <div class="row mt-5">
-      <h4>Overdue Balances and Suggested Charges</h4>
-      <div class="divider"></div>
-      <table>
+<div class="container mx-auto p-6">
+  <h2>Assess Charges</h2>
+
+  <form action="/invoice/createFinanceCharges" method="POST">   
+  <!-- Accounts Receivable Report for Finance Charges  -->
+  <h3>Charge Date: <%= date.toLocaleDateString() %></h3>
+  <input type="hidden" id="date" name="date" value="<%= date %>">
+  <div class="divider"></div>  
+      <table class="table table-zebra">
         <thead>
+          Overdue Balances and Suggested Charges
+        </thead>
           <tr>
             <th>Select</th>
             <th>Customer</th>
@@ -52,10 +49,17 @@
           </td>
         </tfoot>
       </table>
-    </div>
+    
           <button type="submit" class="btn btn-primary">Apply</button>
         </form>
-      </div>
-  </div>
+        <div class="toast" id="summary" hidden="true">
+          <div class="alert alert-info">
+            <span id="summary"></span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="mb-3 float-right">
+          <a class="btn btn-primary" href="/reports">Return to Reports</a>
+        </div>
 </div>
 

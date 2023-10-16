@@ -13,16 +13,13 @@
           <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
           <div class="w-full md:w-1/2">
             <label for="date" class="label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" value="<%= date.toLocaleDateString() %>" required>
+            <input type="date" class="form-control" id="date" name="date" value="<%= date.toISOString().slice(0, 10) %>" required>
           </div>
           </div>
           <div class="w-full md:w-1/2">
             <label for="amount" class="label">Amount</label>
-            <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
-          </div>
-          <div class="w-full md:w-1/2">
-            <label for="number" class="label">Reference Number</label>
-            <input type="number" step="1" class="form-control" id="number" name="number" required>
+            <input type="number" step="0.01" class="form-control" id="amount" placeholder="$0.00" name="amount" required>
+          
           </div>
           <div class="w-full md:w-1/2">
             <!-- select from a list of possible tender types -->
@@ -33,6 +30,10 @@
                     <option value="<%= type %>"><%= type %></option>
                   <% }) %>
               </select>
+          </div>
+          <div class="w-full md:w-1/2">
+            <label for="number" class="label">Reference Number</label>
+            <input type="number" step="1" class="form-control" id="number" name="number" required>
           </div>
           <div class="divider"></div>
               <!-- Invoices!!!  -->
@@ -69,10 +70,10 @@
               $ <%= invoice.total.toFixed(2) %>
             </td>
             <td>
-              $ <input class="due" type="number" step="0.01" readonly="true" name="due" value="<%= invoice.due.toFixed(2) %>" style="border: 0; width: 60px">
+              $ <input class="due" type="number" step="0.01" disabled="true" name="due" value="<%= invoice.due.toFixed(2) %>" style="border: 0; width: 60px">
             </td>
             <td>
-              $ <input class="paid" type="number" step="0.01" readonly="true" name="payments" value="0.00" style="border: 0; width: 60px">
+              $ <input class="paid" type="number" step="0.01" disabled="true" name="payments" value="0.00" style="border: 0; width: 60px">
             </td>
           </tr>
         <% }) %>
@@ -81,13 +82,18 @@
           <th scope="row" colspan="5">Total applied</th>
           <td class="appliedPayment">
             $ 
-            <input type="number" step="0.01" readonly="true" id="appliedPayment" name="appliedPayment" value="0.00" style="border: 0; width: 60px">
+            <input type="number" step="0.01" disabled="true" id="appliedPayment" name="appliedPayment" value="0.00" style="border: 0; width: 60px">
           </td>
         </tfoot>
       </table>
     </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
+      </div>
+      <div class="toast" id="creditToast" hidden="true">
+        <div class="alert alert-info">
+          <span id="credit"></span>
+        </div>
       </div>
   </div>
 </div>
