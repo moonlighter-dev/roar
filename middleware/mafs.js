@@ -18,5 +18,6 @@ module.exports = {
         const dateStr = date
         return new Date(dateStr)
     },
+    
 }
 

@@ -2,3 +2,7 @@
     width: 640px; 
     height: 400px; 
 }
+
+.input-right {
+    text-align: right;
+}

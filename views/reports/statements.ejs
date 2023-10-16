@@ -1,7 +1,5 @@
 <div class="container mx-auto p-6">
   <div class="content-center mt-5">
-    <div class="col-8">
-      <div class="mt-5">
         <h2>Welcome to Statements!</h2>
         <form action="/reports/createStatements" method="POST">   
               <!-- Accounts Receivable Report for Finance Charges  -->
@@ -9,19 +7,20 @@
               <input type="hidden" id="lastMonthEndDate" name="lastMonthEndDate" value="<%= lastMonthEndDate %>">
     <div class="row justify-content-center mt-5">
       <h4>Statement Summary</h4>
-      <table>
+      <table class="table table-zebra">
         <thead>
           <tr>
             <th>Select</th>
             <th>Customer</th>
-            <th>Balance</th>
+            <th>Current Balance</th>
+            <th>Statement Balance</th>
           </tr>
         </thead>
         <tbody>
         <% customers.forEach( (customer) => { %>
           <tr id="<%= customer.id %>">
             <td>
-              <input type="checkbox" id="<%= customer.id %>" name="customers" onchange="checkboxHandler(event)" value="<%= customer.id %>" disabled>
+              <input type="checkbox" id="<%= customer.id %>" name="customers" onchange="checkboxHandler(event)" value="<%= customer.id %>" checked>
             </td>
             <td>
               <a href="/customers/viewCustomer/<%= customer.id %>">
@@ -31,6 +30,9 @@
             <td>          
               $ <%= customer.balance.toFixed(2) %>
             </td>
+            <td>
+              $ <%= statementBalances.find(statement => statement.customerId === customer.id).statementBalance.toFixed(2) %>
+            </td>
           </tr>
         <% }) %>
         </tbody>
@@ -38,18 +40,16 @@
           <th scope="row" colspan="5">Total</th>
           <td class="total">
             $ 
-            <input type="number" step="0.01" readonly="true" id="total" name="total" value="0.00" style="border: 0; width: 60px">
+            <input type="number" step="0.01" readonly="true" id="total" name="total" value="<%= totalStatementBalance.toFixed(2) %>" style="border: 0; width: 60px">
           </td>
         </tfoot>
       </table>
     </div>
-          <button type="submit" class="btn btn-primary">Print</button>
+          <button type="submit" class="btn btn-secondary">Print</button>
         </form>
       </div>
       <div class="divider"></div>
       <div class="mb-3 float-right">
         <a class="btn btn-primary" href="/reports">Return to Reports</a>
-      </div>
-  </div>
 </div>
 

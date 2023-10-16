@@ -94,23 +94,52 @@ module.exports = {
   },
   //Renders a page with end of month customer information, stats such as number of statements, and a print button
   reviewStatements: async (req, res) => {
-    
+    const getStatementBalance =(invoices, customerId) => {
+      return invoices
+        .filter(invoice => invoice.customer === customerId)
+        .reduce((acc, c) => acc + c.amount, 0);
+    }
     try {
-      const date = new Date(req.body.statementDate)
-      //Prepare list of customers with balances greater than 0
+      const statementDate = new Date(req.body.statementDate)
       const customers = await Customer
-        .find({ balance: { $gt: 0 }})
+        .find()
         .lean();
+      const statementInvoices = await Invoice
+        .find({ isPaid: false, date: { $lt: statementDate } })
+        .lean()
 
-        const lastMonthEndDate = new Date(date.getFullYear(), date.getMonth(), 0);
+        console.log(statementInvoices)
+
+      if (statementInvoices.length === 0) {
+        return res.render('reports/no-statements.ejs', {
+          user: req.user,
+          page: "no-statements",
+        })
+      }
+
+      const statementCustomers = customers.filter( customer => new Set(Object.values(statementInvoices.customers).includes(customer.id)))
+
+      const statementBalances = 
+      statementCustomers.map(customer => {
+        const statementBalance = getStatementBalance(statementInvoices, customer.id);
+        return { customerId: customer.id, balance: statementBalance} }
+      );
+
+      const totalStatementBalance = statementBalances.reduce((total, customer) => total + customer.balance, 0);
+
+      const statementCustomerIds = statementBalances.map(item => item.customerId);  
+
+      console.log(statementBalances)
 
         res.render("reports/statements.ejs", { 
-          customers: customers,
-          lastMonthEndDate: lastMonthEndDate,
+          customers: statementCustomers,
+          statementBalances,
+          totalStatementBalance,
+          lastMonthEndDate: statementDate,
           user: req.user,
           page: "statements", 
         });
-    }
+  }
     catch (err) {
       console.error(err);
       res.status(500).render("error/500.ejs", {

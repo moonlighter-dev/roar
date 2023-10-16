@@ -1,17 +1,11 @@
 <div class="container mx-auto p-6">
-  <div class="content-center mt-5">
-      <div class="col-8">
         <h3><%= user.companyName %> Daily Sales Summary</h3>
         <p>Date: <%= date %></p>
-      </div>
-      <div class="mb-3">
+      <div class="mb-3" hidden="true">
         <h3>Global X</h3>
         <input type="file" class="form-control" id="globalX">
         <button class="btn" id="automagic">Automagic</button><span>experimental</span>
       </div>
-    </div>
-  </div>
-  <div class="divider"></div>
   <div class="alert alert-error">
     <div class="lg:tooltip" data-tip="" id="balanceCheck">
     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -22,6 +16,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     <span>Success! Cash Balanced!</span>
   </div>
+  <div class="divider"></div>
   <form action="/reports/createDaily" method="POST">
   <!-- AR Report Table -->
   <table>
@@ -32,7 +27,7 @@
       <th scope="row"><label for="totalAR" class="form-label">Total AR</label></th>
       <td>
         <div class="mb-3">
-          <input type="number" step="0.01" class="form-control" id="totalAR" name="totalAR" value="<%= invoices.reduce((acc, invoice) => acc + invoice.total, 0) %>" disabled="true" required>
+          <input type="number" step="0.01" class="form-control input-right" id="totalAR" name="totalAR" value="<%= invoices.reduce((acc, invoice) => acc + invoice.total, 0).toFixed(2) %>" disabled="true" required>
         </div>
       </td>
     </tr>
@@ -40,7 +35,7 @@
       <th scope="row"><label for="cash" class="form-label">ROA Cash</label></th>
       <td>
         <div class="mb-3">
-          <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CASH").reduce((acc, payment) => acc + payment.total, 0) %>" class="form-control" id="paymentsCash" name="paymentsCash" required>
+          <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CASH").reduce((acc, payment) => acc + payment.total, 0).toFixed(2) %>" class="form-control input-right" id="paymentsCash" name="paymentsCash" required>
         </div>
       </td>
     </tr>
@@ -48,7 +43,7 @@
         <th scope="row"><label for="roa-check" class="form-label">ROA Check</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CHECK").reduce((acc, payment) => acc + payment.total, 0) %>" class="form-control" id="roa-check" name="roa-check" required>
+            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CHECK").reduce((acc, payment) => acc + payment.total, 0).toFixed(2) %>" class="form-control input-right" id="roa-check" name="roa-check" required>
           </div>
         </td>
         </tr>
@@ -56,7 +51,7 @@
         <th scope="row"><label for="CC" class="form-label">CC</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CC").reduce((acc, payment) => acc + payment.total, 0) %>" class="form-control" id="roa-cc" name="roa-cc" required>
+            <input type="number" step="0.01" disabled="true" value="<%= payments.filter(payment => payment.tender === "CC").reduce((acc, payment) => acc + payment.total, 0).toFixed(2) %>" class="form-control input-right" id="roa-cc" name="roa-cc" required>
           </div>
         </td>
       </tr>
@@ -64,7 +59,7 @@
         <th scope="row"><label for="totalROA" class="form-label">Total ROA</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="<%= payments.reduce((acc, payment) => acc + payment.total, 0) %>" class="form-control" id="totalROA" name="totalROA" required>
+            <input type="number" step="0.01" disabled="true" value="<%= payments.reduce((acc, payment) => acc + payment.total, 0).toFixed(2) %>" class="form-control input-right" id="totalROA" name="totalROA" required>
           </div>
         </td>
       </tr>
@@ -73,19 +68,19 @@
       <div class="divider"></div>
       <div class="mb-3">
         <label for="cashInDrawer" class="form-label">Cash in Drawer</label>
-        <input type="number" step="0.01" class="form-control" id="cashInDrawer" value="0.00" name="cashInDrawer">
+        <input type="number" step="0.01" class="form-control input-right" id="cashInDrawer" value="0.00" name="cashInDrawer">
       </div>
       <div class="mb-3">
         <label for="checks" class="form-label">Total Checks</label>
-        <input type="number" step="0.01" class="form-control" id="checks" value="0.00" name="checks">
+        <input type="number" step="0.01" class="form-control input-right" id="checks" value="0.00" name="checks">
       </div>
       <div class="mb-3">
         <label for="cc" class="form-label">CC Batch</label>
-        <input type="number" class="form-control" id="cc" step="0.01" value="0.00" name="cc">
+        <input type="number" class="form-control input-right" id="cc" step="0.01" value="0.00" name="cc">
       </div>
       <div class="mb-3">
         <label for="redeemGC" class="form-label">Redeem GC</label>
-        <input type="number" class="form-control" id="redeemGC" step="0.01" value="0.00" name="redeemGC">
+        <input type="number" class="form-control input-right" id="redeemGC" step="0.01" value="0.00" name="redeemGC">
       </div>
       <div class="divider"></div>
       <!-- Register X Data -->
@@ -96,7 +91,7 @@
               <th scope="row"><label for="xCash" class="form-label">Cash</label></th>
               <td>          
                 <div class="mb-3">
-                  <input type="number" step="0.01" value="0.00" class="form-control" id="xCash" name="xCash">
+                  <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xCash" name="xCash">
                 </div>
               </td>
             </tr>
@@ -104,7 +99,7 @@
               <th scope="row"><label for="xCheck" class="form-label">Check</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xCheck" name="xCheck">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xCheck" name="xCheck">
           </div>
         </td>
             </tr>
@@ -112,7 +107,7 @@
               <th scope="row"><label for="xCredit" class="form-label">Credit</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xCredit" name="xCredit">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xCredit" name="xCredit">
           </div>
         </td>
             </tr>
@@ -120,7 +115,7 @@
               <th scope="row"><label for="xDebit" class="form-label">Debit</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xDebit" name="xDebit">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xDebit" name="xDebit">
           </div>
         </td>
             </tr>
@@ -128,7 +123,7 @@
               <th scope="row"><label for="xGiftCard" class="form-label">Gift Card</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xGiftCard" name="xGiftCard">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xGiftCard" name="xGiftCard">
           </div>
         </td>
             </tr>
@@ -136,7 +131,7 @@
               <th scope="row"><label for="xCustomerCharge" class="form-label">Customer Charge</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xCustomerCharge" name="xCustomerCharge">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xCustomerCharge" name="xCustomerCharge">
           </div>
         </td>
             </tr>
@@ -144,7 +139,7 @@
               <th scope="row"><label for="xReturns" class="form-label">Returns</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xReturns" name="xReturns">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xReturns" name="xReturns">
           </div>
         </td>
             </tr>
@@ -152,7 +147,7 @@
               <th scope="row"><label for="xSubRegCash" class="form-label">Sub Reg Cash</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xSubRegCash" name="xSubRegCash">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xSubRegCash" name="xSubRegCash">
           </div>
         </td>
             </tr>
@@ -160,7 +155,7 @@
               <th scope="row"><label for="xGiftCardsSold" class="form-label">Gift Cards Sold</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xGiftCardsSold" name="xGiftCardsSold">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xGiftCardsSold" name="xGiftCardsSold">
           </div>
         </td>
             </tr>
@@ -168,7 +163,7 @@
               <th scope="row"><label for="xPayouts" class="form-label">Total Payouts</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xPayouts" name="xPayouts">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xPayouts" name="xPayouts">
           </div>
         </td>
             </tr>
@@ -176,7 +171,7 @@
               <th scope="row"><label for="xSubtotal" class="form-label">Subtotal</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="xSubtotal" name="xSubtotal">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="xSubtotal" name="xSubtotal">
           </div>
         </td>
             </tr>
@@ -184,7 +179,7 @@
               <th scope="row"><label for="xTax" class="form-label">Tax</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" value="0.00" class="form-control" id="xTax" name="xTax">
+            <input type="number" step="0.01" value="0.00" class="form-control input-right" id="xTax" name="xTax">
           </div>
         </td>
             </tr>
@@ -192,7 +187,7 @@
               <th scope="row"><label for="xTotalRegSales" class="form-label">Total Reg Sales</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="xTotalRegSales" name="xTotalRegSales">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="xTotalRegSales" name="xTotalRegSales">
           </div>
         </td>
             </tr>
@@ -200,7 +195,7 @@
               <th scope="row"><label for="totalTaxable" class="form-label">Total Taxable</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="totalTaxable" name="totalTaxable">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="totalTaxable" name="totalTaxable">
           </div>
         </td>
             </tr>
@@ -208,7 +203,7 @@
               <th scope="row"><label for="totalExempt" class="form-label">Total Exempt</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="totalExempt" name="totalExempt">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="totalExempt" name="totalExempt">
           </div>
         </td>
             </tr>
@@ -216,7 +211,7 @@
               <th scope="row"><label for="drawerTotal" class="form-label">Drawer Total</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="drawerTotal" name="drawerTotal">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="drawerTotal" name="drawerTotal">
           </div>
         </td>
             </tr>
@@ -224,7 +219,7 @@
               <th scope="row"><label for="deposit" class="form-label">Deposit</label></th>
         <td>          
           <div class="mb-3">
-            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control" id="deposit" name="deposit">
+            <input type="number" step="0.01" disabled="true" value="0.00" class="form-control input-right" id="deposit" name="deposit">
           </div>
         </td>
             </tr>

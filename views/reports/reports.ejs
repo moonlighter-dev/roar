@@ -5,7 +5,7 @@
         <div class="card w-96 bg-neutral text-primary-focus-content">
           <div class="card-body">
           <div class="card-title">Daily Report</div>
-          <form action="/reports/dailyReport/" enctype="multipart/form-data" method="POST">
+          <form action="/reports/dailyReport/" method="POST">
               <label for="date" class="form-label">Date</label>
               <input type="date" class="form-control" id="date" name="date" value="<%= yesterday.toISOString().slice(0, 10) %>" required>
               <div class="card-actions justify-end">
@@ -19,7 +19,7 @@
         <div class="card w-96 bg-neutral text-primary-focus-content">
           <div class="card-body">
           <div class="card-title">Finance charges</div>
-          <form action="/invoices/financeCharges/" enctype="multipart/form-data" method="POST">
+          <form action="/invoices/financeCharges/" method="POST">
               <label for="chargeDate" class="form-label">Date</label>
               <!-- Make sure this is the last day of the previous month, so the charge will show up on the statement. Only one batch of finance charges should be allowed per month -->
               <input type="date" class="form-control" id="chargeDate" name="chargeDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
@@ -33,19 +33,12 @@
         <div class="card w-96 bg-neutral text-primary-focus-content">
           <div class="card-body">
           <div class="card-title">Review Statements</div>
-          <form action="/reports/reviewStatements/" enctype="multipart/form-data" method="POST">
+          <form action="/reports/reviewStatements/" method="POST">
               <label for="statementDate" class="form-label">Date</label>
               <!-- This should default to the last day of the previous month. -->
               <!-- Can add radio button for All customers or select one customer -->
               <input type="date" class="form-control" id="statementDate" name="statementDate" value="<%= lastMonthEndDate.toISOString().slice(0, 10) %>" required>
-              <!-- select from customer list -->
-              <label for="customer" class="label">Customer</label>
-              <select name="customer" class="form-control select select-primary w-full max-w-xs" id="customer" required>
-                <option value="<%= customers %>" selected>All customers</option>
-                <% customers.forEach(customer => { %>
-                  <option value="<%= customer._id %>" id="customers"><%= customer.companyName %></option>
-                <% }) %>
-              </select>
+              
               <div class="card-actions justify-end">
                 <button type="submit" class="btn btn-primary">Review Statements</button>
               </div>
