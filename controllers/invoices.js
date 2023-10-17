@@ -136,8 +136,6 @@ module.exports = {
       if (customerPromise.credit > 0) {
         const lastPaymentPromise = await Payment.findOne({ customer: customer._id })
 
-        console.log(lastPayment)
-
         paidBy = lastPaymentPromise ? lastPayment.id : null;
         
         if (dueAmt <= customerPromise.credit) {
