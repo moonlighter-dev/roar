@@ -15,6 +15,9 @@
           </div>
             <% if (user) { %>
               <%= user.userName %>
+              <div class="p-4">
+               <a href="/invoices/newInvoice/" class="btn btn-secondary">+ Invoice</a> 
+              </div>
             <% } else { %>
               Stranger
             <% } %>
@@ -24,6 +27,7 @@
         </div>
         <div class="navbar-end">
           <% if (user) { %>
+            
             <a href="/logout" class="btn btn-primary">Logout</a>
           <% } %>
             </div>

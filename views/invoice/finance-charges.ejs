@@ -3,12 +3,12 @@
 
   <form action="/invoice/createFinanceCharges" method="POST">   
   <!-- Accounts Receivable Report for Finance Charges  -->
-  <h3>Charge Date: <%= date.toLocaleDateString() %></h3>
+  <h3>Charge Date: <%= date.toISOString().slice(0, 10) %></h3>
   <input type="hidden" id="date" name="date" value="<%= date %>">
   <div class="divider"></div>  
       <table class="table table-zebra">
         <thead>
-          Overdue Balances and Suggested Charges
+        Overdue Balances and Suggested Charges
         </thead>
           <tr>
             <th>Select</th>
