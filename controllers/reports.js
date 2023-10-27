@@ -108,8 +108,6 @@ module.exports = {
         .find({ isPaid: false, date: { $lt: statementDate } })
         .lean()
 
-        console.log(statementInvoices)
-
       if (statementInvoices.length === 0) {
         return res.render('reports/no-statements.ejs', {
           user: req.user,
@@ -117,7 +115,13 @@ module.exports = {
         })
       }
 
-      const statementCustomers = customers.filter( customer => new Set(Object.values(statementInvoices.customers).includes(customer.id)))
+      const statementCustomerIds = statementInvoices.map(invoice => invoice.customer)
+
+      console.log(statementCustomerIds)
+
+      const statementCustomers = customers.filter(customer => statementCustomerIds.includes(customer.id))
+
+      console.log(statementCustomers)
 
       const statementBalances = 
       statementCustomers.map(customer => {
@@ -125,9 +129,7 @@ module.exports = {
         return { customerId: customer.id, balance: statementBalance} }
       );
 
-      const totalStatementBalance = statementBalances.reduce((total, customer) => total + customer.balance, 0);
-
-      const statementCustomerIds = statementBalances.map(item => item.customerId);  
+      const totalStatementBalance = statementBalances.reduce((total, customer) => total + customer.balance, 0); 
 
       console.log(statementBalances)
 

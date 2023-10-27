@@ -48,7 +48,7 @@
 <div class="col-6 mt-5">
   <% if (customer.balance == 0) { %>
   <form action="/customers/deleteCustomer/<%= customer._id %>?_method=DELETE" method="POST" id="deleteCustomerForm" class="col-3">
-  <button class="btn btn-warning" type="submit">Delete this Customer</button>
+  <button class="btn btn-warning" type="submit" hidden="true">Delete this Customer</button>
   </form>
 <% } %>
 </div>
